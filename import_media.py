@@ -17,10 +17,13 @@ def read_files(path: str) -> Set[str]:
 def parse_dates(urls: Set[str]):
     out_dict = {}
     for url in urls:
-        if "ewn" in url:
+        if "https://ewn.co.za/" in url:
             raw_dt = url.strip("https://ewn.co.za/")[:10].split('/')
             date = dt.datetime(int(raw_dt[0]), int(raw_dt[1]), int(raw_dt[2]))
-            out_dict[date] = ("EWN", url)
+            if date not in out_dict.keys():
+                out_dict[date] = [("EWN", url)]
+            else:
+                out_dict[date].append(("EWN", url))
         elif "https://apnews.com/" in url:
             page = requests.get(url)
             soup = bs(page.text, 'html.parser')
@@ -30,11 +33,33 @@ def parse_dates(urls: Set[str]):
                 day_num = gs.group(2)
                 year_num = gs.group(3)
                 date = dt.datetime(int(year_num), int(month_num), int(day_num))
-                out_dict[date] = ("AP News", url)
-        elif "bbc" in url:
-            pass
-        elif "un.org" in url:
-            pass
+                if date not in out_dict.keys():
+                    out_dict[date] = [("Associated Press", url)]
+                else:
+                    out_dict[date].append(("Associated Press", url))
+        elif "https://www.bbc.com/" in url:
+            page = requests.get(url)
+            soup = bs(page.text, 'html.parser')
+            for match in soup.select('time[data-testid="timestamp"]'):
+                gs = re.match(r"^.*datetime=\"(\d+)-(\d+)-(\d+)T.*$", str(match))
+                day_num = gs.group(3)
+                month_num = gs.group(2)
+                year_num = gs.group(1)
+                date = dt.datetime(int(year_num), int(month_num), int(day_num))
+                if date not in out_dict.keys():
+                    out_dict[date] = [("BBC", url)]
+                else:
+                    out_dict[date].append(("BBC", url))
+        elif "https://www.theguardian.com/" in url:
+            gs = re.match(r"^https://www.theguardian.com/[\w\-\/]*/(\d+)/(\w+)/(\d+)/.*$", url)
+            day_num = gs.group(3)
+            month_num = list(calendar.month_name).index(str(gs.group(2)).title())
+            year_num = gs.group(1)
+            date = dt.datetime(int(year_num), int(month_num), int(day_num))
+            if date not in out_dict.keys():
+                out_dict[date] = [("The Guardian", url)]
+            else:
+                out_dict[date].append(("The Guardian", url))
     return out_dict
 
 
