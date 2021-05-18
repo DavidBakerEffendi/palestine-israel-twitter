@@ -1,4 +1,4 @@
-from typing import Set, List
+from typing import Set, List, Dict, Tuple
 import requests
 import datetime as dt
 from bs4 import BeautifulSoup as bs
@@ -14,7 +14,7 @@ def read_files(path: str) -> Set[str]:
         return set([])
 
 
-def parse_dates(urls: Set[str]):
+def parse_dates(urls: Set[str]) -> Dict[dt, List[Tuple[str, str]]]:
     out_dict = {}
     for url in urls:
         if "https://ewn.co.za/" in url:
@@ -63,7 +63,12 @@ def parse_dates(urls: Set[str]):
     return out_dict
 
 
-def get_data():
+def get_data() -> Dict[dt, List[Tuple[str, str]]]:
+    """
+    Reads the URLs from "./resources/media_articles.txt" and organizes these by date and news outlet.
+    :return a dictionary with keys being datetime and values being strings to lists of URLs.
+    """
+    # TODO: Convert to Dict[dt, Dict[str,str]]
     urls = read_files("./resources/media_articles.txt")
     return parse_dates(urls)
 
