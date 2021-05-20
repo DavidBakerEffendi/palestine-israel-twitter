@@ -9,7 +9,7 @@ URL = "https://api.twitter.com/2"
 REQUEST_CAP = 450
 REQUEST_WINDOW = 15 * 60.0  # 15 minute window
 SECONDS_PER_REQUEST = (REQUEST_WINDOW + 1) / REQUEST_CAP  # Add a bit of slack
-MAX_RESULTS = 10
+MAX_RESULTS = 100
 
 
 def headers() -> Dict[str, str]:
@@ -32,12 +32,19 @@ def pull_data(file_pref, query):
             print("Query {}".format(i))
         res = get_recent_tweets(query, next_token)
         result_count = int(res['meta']['result_count'])
-        users = res['includes']['users']
         next_token = res['meta']['next_token']
-        tweets = res['data']
 
-        write_to_file('{}_tweets.txt'.format(file_pref), tweets)
-        write_to_file('users.txt', users)
+        try:
+            tweets = res['data']
+            write_to_file('{}_tweets.txt'.format(file_pref), tweets)
+        except:
+            print("Error while writing tweets from {}".format(res))
+
+        try:
+            users = res['includes']['users']
+            write_to_file('users.txt', users)
+        except:
+            print("Error while writing users from {}".format(res))
 
         if conf.DEBUG:
             print('Result count: {}'.format(result_count))
@@ -57,7 +64,8 @@ def get_recent_tweets(query: str, next_token=None):
         'end_time': (dt.datetime.now() - dt.timedelta(seconds=10)).astimezone().isoformat(),
         'expansions': 'author_id,geo.place_id',
         'place.fields': 'country',
-        'user.fields': 'id,location,verified'
+        'user.fields': 'id,location,verified',
+        'tweet.fields': 'id,created_at,geo,lang,text,withheld'
     }
     if next_token is not None:
         params['next_token'] = next_token
@@ -83,10 +91,13 @@ if __name__ == "__main__":
     #     'user.fields': 'created_at'
     # })
     for tag in get_hashtags(conf.NEUTRAL_HASHTAGS):
+        print("Pulling data for {}".format(tag))
         pull_data("neutral", tag)
     for tag in get_hashtags(conf.PRO_ISRAEL_HASHTAGS):
+        print("Pulling data for {}".format(tag))
         pull_data("pro_israel", tag)
     for tag in get_hashtags(conf.PRO_PALESTINE_HASHTAGS):
+        print("Pulling data for {}".format(tag))
         pull_data("pro_palestine", tag)
     # print(SECONDS_PER_REQUEST)
     # print(pull_data('#HopeToGaza'))
