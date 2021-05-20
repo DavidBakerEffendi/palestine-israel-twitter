@@ -23,7 +23,7 @@ def get(endpoint: str, params: Dict):
     return requests.get("{}/{}".format(URL, endpoint), params=params, headers=headers()).json()
 
 
-def pull_data(file_pref, query):
+def pull_data(query):
     flag = False
     i = 0
     next_token = None
@@ -36,7 +36,7 @@ def pull_data(file_pref, query):
 
         try:
             tweets = res['data']
-            write_to_file('{}_tweets.txt'.format(file_pref), tweets)
+            write_to_file('tweets.txt', tweets)
         except:
             print("Error while writing tweets from {}".format(res))
 
@@ -84,20 +84,10 @@ def write_to_file(f_name: str, input_list: List[str]):
 
 
 if __name__ == "__main__":
-    # result = get("tweets/search/recent", {
-    #     'query': 'from:TwitterDev',
-    #     'tweet.fields': 'created_at',
-    #     'expansions': 'author_id',
-    #     'user.fields': 'created_at'
-    # })
-    for tag in get_hashtags(conf.NEUTRAL_HASHTAGS):
-        print("Pulling data for {}".format(tag))
+    tags = []
+    tags.extend(get_hashtags(conf.NEUTRAL_HASHTAGS))
+    tags.extend(get_hashtags(conf.PRO_ISRAEL_HASHTAGS))
+    tags.extend(get_hashtags(conf.PRO_PALESTINE_HASHTAGS))
+    for i, tag in enumerate(tags):
+        print("({}/{}) Pulling data for {}".format(i, len(tags), tag))
         pull_data("neutral", tag)
-    for tag in get_hashtags(conf.PRO_ISRAEL_HASHTAGS):
-        print("Pulling data for {}".format(tag))
-        pull_data("pro_israel", tag)
-    for tag in get_hashtags(conf.PRO_PALESTINE_HASHTAGS):
-        print("Pulling data for {}".format(tag))
-        pull_data("pro_palestine", tag)
-    # print(SECONDS_PER_REQUEST)
-    # print(pull_data('#HopeToGaza'))
