@@ -1,4 +1,4 @@
-from typing import Set, List, Dict, Tuple
+from typing import Set, List, Dict
 import requests
 import datetime as dt
 from bs4 import BeautifulSoup as bs
@@ -71,6 +71,7 @@ def get_data() -> Dict[dt.datetime, Dict[str, List[str]]]:
     :return a dictionary with keys being datetime and values being strings to lists of URLs.
     """
     mu_pickle = "./media_urls.pickle"
+    print("Getting media objects... ", end="")
     if os.path.isfile(mu_pickle):
         with open(mu_pickle, "rb") as mu:
             out_dict = pk.load(mu)
@@ -79,6 +80,7 @@ def get_data() -> Dict[dt.datetime, Dict[str, List[str]]]:
         out_dict = parse_dates(urls)
         with open(mu_pickle, "wb") as mu:
             pk.dump(out_dict, mu)
+    print("Success!")
     return out_dict
 
 
