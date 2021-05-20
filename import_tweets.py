@@ -89,5 +89,5 @@ if __name__ == "__main__":
     tags.extend(get_hashtags(conf.PRO_ISRAEL_HASHTAGS))
     tags.extend(get_hashtags(conf.PRO_PALESTINE_HASHTAGS))
     for i, tag in enumerate(tags):
-        print("({}/{}) Pulling data for {}".format(i, len(tags), tag))
-        pull_data("neutral", tag)
+        print("({}/{}) Pulling data for {}".format(i + 1, len(tags), tag))
+        pull_data(tag)
