@@ -133,3 +133,5 @@ dmypy.json
 /.idea/palestine-israel-twitter.iml
 /.idea/inspectionProfiles/profiles_settings.xml
 /.idea/vcs.xml
+
+config.py
