@@ -32,7 +32,12 @@ def pull_data(query):
             print("Query {}".format(i))
         res = get_recent_tweets(query, next_token)
         result_count = int(res['meta']['result_count'])
-        next_token = res['meta']['next_token']
+
+        try:
+            if result_count == MAX_RESULTS:
+                next_token = res['meta']['next_token']
+        except:
+            print("Warning, no next token found in {}".format(res))
 
         try:
             tweets = res['data']
@@ -60,8 +65,8 @@ def get_recent_tweets(query: str, next_token=None):
     params = {
         'query': query,
         'max_results': MAX_RESULTS,
-        'start_time': (dt.datetime.now() - dt.timedelta(days=6.9999)).astimezone().isoformat(),
-        'end_time': (dt.datetime.now() - dt.timedelta(seconds=10)).astimezone().isoformat(),
+        'start_time': (dt.datetime.now() - dt.timedelta(days=1)).astimezone().isoformat(),
+        # 'end_time': (dt.datetime.now() - dt.timedelta(days=2)).astimezone().isoformat(),
         'expansions': 'author_id,geo.place_id',
         'place.fields': 'country',
         'user.fields': 'id,location,verified',
@@ -77,10 +82,23 @@ def get_hashtags(f_name: str) -> List[str]:
         return f.read().splitlines()
 
 
-def write_to_file(f_name: str, input_list: List[str]):
-    with open(f_name, 'a+') as f:
-        for i in input_list:
+def write_to_file(f_name: str, input_collection, w_flag='a+'):
+    with open(f_name, w_flag) as f:
+        for i in input_collection:
             f.write(json.dumps(i) + "\n")
+
+
+def dedup_datasets():
+    with open('tweets.txt', 'r') as f:
+        l = {}
+        for line in f.readlines():
+            l[line] = json.loads(line)
+    write_to_file('./tweets.txt', l.values(), 'w+')
+    with open('users.txt', 'r') as f:
+        l = {}
+        for line in f.readlines():
+            l[line] = json.loads(line)
+    write_to_file('./users.txt', l.values(), 'w+')
 
 
 if __name__ == "__main__":
@@ -91,3 +109,4 @@ if __name__ == "__main__":
     for i, tag in enumerate(tags):
         print("({}/{}) Pulling data for {}".format(i + 1, len(tags), tag))
         pull_data(tag)
+    dedup_datasets()
