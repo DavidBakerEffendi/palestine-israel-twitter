@@ -74,6 +74,10 @@ def get_recent_tweets(query: str, next_token=None):
     }
     if next_token is not None:
         params['next_token'] = next_token
+    if conf.TWEETS_FROM is not None:
+        params['start_time'] = conf.TWEETS_FROM
+    if conf.TWEETS_TO is not None:
+        params['end_time'] = conf.TWEETS_TO
     return get("tweets/search/recent", params)
 
 

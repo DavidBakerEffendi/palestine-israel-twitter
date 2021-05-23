@@ -6,8 +6,8 @@ TWITTER_BEARER_TOKEN =
 EXPERT_AI_USER =
 EXPERT_AI_PASS =
 
-TWEETS_FROM = dt.datetime(2021, 5, 18)
-TWEETS_TO = dt.datetime.now()
+TWEETS_FROM = (dt.datetime.now() - dt.timedelta(days=6.99)).astimezone().isoformat()
+TWEETS_TO = None
 MEDIA_URLS_PATH = "./resources/media_articles.txt"
 PRO_ISRAEL_HASHTAGS = "./resources/pro_israel.txt"
 PRO_PALESTINE_HASHTAGS = "./resources/pro_palestine.txt"
