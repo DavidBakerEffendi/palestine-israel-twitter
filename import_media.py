@@ -7,6 +7,11 @@ import calendar
 import config as conf
 import pickle as pk
 import os.path
+from selenium import webdriver
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.support.ui import WebDriverWait
+
+import expert_ai_api
 
 
 def read_files(path: str) -> Set[str]:
@@ -26,6 +31,43 @@ def insert_new_url(d, date: dt.datetime, media: str, url: str):
             media_dict[media] = [url]
         else:
             media_dict[media].append(url)
+
+
+def configure_firefox_driver():
+    # Add additional Options to the webdriver
+    firefox_options = FirefoxOptions()
+    # add the argument and make the browser Headless.
+    firefox_options.add_argument("--headless")
+    driver = webdriver.Firefox(options=firefox_options)
+    return driver
+
+
+def scrape_media_text(url: str) -> str:
+    blacklist = [
+        'style',
+        'script',
+        'header'
+    ]
+    out = ""
+    if "https://apnews.com/" in url:
+        driver = configure_firefox_driver()
+        driver.get(url)
+        WebDriverWait(driver, 60).until(
+            lambda h: h.find_element_by_class_name('Article').is_displayed()
+        )
+        ps = driver.find_elements_by_tag_name('p')
+        for p in ps:
+            out += " {}".format(p.text)
+    else:
+        page = requests.get(url)
+        html = page.text
+        soup = bs(html, 'html5lib')
+        if "https://www.bbc.com" in url:
+            blacklist.append("span")
+        elements = [t for t in soup.find_all('p') if t.parent.name not in blacklist and 'href' not in str(t.parent)]
+        for i, s in enumerate(elements):
+            out += " {}".format(s.getText())
+    return out
 
 
 def parse_dates(urls: Set[str]) -> Dict[dt.datetime, Dict[str, List[str]]]:
@@ -85,4 +127,9 @@ def get_data() -> Dict[dt.datetime, Dict[str, List[str]]]:
 
 
 if __name__ == "__main__":
-    print(get_data())
+    media_data = get_data()
+    sample_url = "https://apnews.com/article/hamas-gaza-middle-east-israel-israel-palestinian-conflict-ab0bfc2b25d2a03756fb0c084fca1a3d"
+    text = scrape_media_text(sample_url)
+    print(text)
+    # expert_ai_api.publish_credentials()
+    # expert_ai_api.obtain_keyphrases(text, 'en')
