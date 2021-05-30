@@ -135,4 +135,6 @@ dmypy.json
 /.idea/vcs.xml
 
 config.py
-media_urls.pickle
+*.pickle
+*.json
+.DS_Store

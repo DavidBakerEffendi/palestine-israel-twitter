@@ -1,4 +1,4 @@
-from typing import Set, List, Dict
+from typing import Set, List, Dict, Tuple
 import requests
 import datetime as dt
 from bs4 import BeautifulSoup as bs
@@ -147,7 +147,8 @@ def get_data() -> Dict[dt.datetime, Dict[str, List[str]]]:
     return out_dict
 
 
-def get_scraped_text(media_data: Dict[dt.datetime, Dict[str, List[str]]]) -> Dict[dt.datetime, Dict[str, List[str]]]:
+def get_scraped_text(media_data: Dict[dt.datetime, Dict[str, List[str]]]) -> Dict[dt.datetime, Dict[str, List[
+        Tuple[str, str]]]]:
     scraped_data = {}
     for (date, media_map) in media_data.items():
         data_per_media_outlet = {}
@@ -158,15 +159,15 @@ def get_scraped_text(media_data: Dict[dt.datetime, Dict[str, List[str]]]) -> Dic
                     text = scrape_media_text(u)
                     if len(text) < 5:
                         print("Unsuccessful scrape {}".format(u))
-                    else:
-                        data_per_media_outlet[media_outlet].append(text)
+                    data_per_media_outlet[media_outlet].append((u, text))
                 except TimeoutException:
                     print("Unsuccessful scrape {} (timeout)".format(u))
         scraped_data[date] = data_per_media_outlet
     return scraped_data
 
 
-def scraped_data(media_data: Dict[dt.datetime, Dict[str, List[str]]]) -> Dict[dt.datetime, Dict[str, List[str]]]:
+def scraped_data(media_data: Dict[dt.datetime, Dict[str, List[str]]]) -> Dict[dt.datetime, Dict[str, List[
+        Tuple[str, str]]]]:
     mu_pickle = "./scraped_data.pickle"
     print("Scraping media objects... ", end="")
     if os.path.isfile(mu_pickle):
@@ -178,9 +179,25 @@ def scraped_data(media_data: Dict[dt.datetime, Dict[str, List[str]]]) -> Dict[dt
     return scraped_data
 
 
+def export_to_csv(scraped_data: Dict[dt.datetime, Dict[str, List[Tuple[str, str]]]]):
+    import json
+    with open('media.json', 'w') as f:
+        for (date, media_data) in scraped_data.items():
+            for (media, articles) in media_data.items():
+                for (u, a) in articles:
+                    payload = {
+                        'date': date.strftime('%Y-%m-%d'),
+                        'media_outlet': media,
+                        'url': u,
+                        'text': a.strip()
+                    }
+                    f.write(json.dumps(payload) + "\n")
+
+
 if __name__ == "__main__":
     media_data = get_data()
     scraped_data = scraped_data(media_data)
-    print(scraped_data)
+    export_to_csv(scraped_data)
+    # print(scraped_data)
     # expert_ai_api.publish_credentials()
     # expert_ai_api.obtain_keyphrases(text, 'en')
