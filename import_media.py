@@ -198,6 +198,4 @@ if __name__ == "__main__":
     media_data = get_data()
     scraped_data = scraped_data(media_data)
     export_to_csv(scraped_data)
-    # print(scraped_data)
-    # expert_ai_api.publish_credentials()
-    # expert_ai_api.obtain_keyphrases(text, 'en')
+
