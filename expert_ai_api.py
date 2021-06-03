@@ -27,6 +27,7 @@ def publish_credentials():
 def clean_text(text: str) -> List[str]:
     import nltk
     import re
+    text = text.encode("ascii", "ignore").decode()
     text = re.sub(r"\s+", " ", text, flags=re.UNICODE)
     return nltk.sent_tokenize(text)
 
