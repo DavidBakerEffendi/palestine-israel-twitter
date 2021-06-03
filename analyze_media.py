@@ -1,10 +1,17 @@
-from typing import Tuple, List, Set, Dict
+import time
+from typing import Tuple, List, Dict
 
 import numpy as np
 
 import pandas as pd
 import json
+
+from expertai.nlapi.common.errors import ExpertAiRequestError
+
 import expert_ai_api
+
+
+SECONDS_PER_REQUEST = 1 / 2
 
 
 def import_data():
@@ -39,24 +46,49 @@ def analyze_text(text: str) -> Tuple[float, Dict[str, float], Dict[str, float], 
     e_traits = {}
     b_traits = {}
 
-    for chunk in chunks(expert_ai_api.clean_text(text), 25):
+    for chunk in chunks(expert_ai_api.clean_text(text), 20):
         payload = " ".join(chunk)
-        sent.append(expert_ai_api.obtain_sentiment(payload))
-        for x in expert_ai_api.obtain_key_phrases(payload):
-            if x.value in phrases.keys():
-                phrases[x.value].append(x.score)
-            else:
-                phrases[x.value] = [x.score]
-        for x in expert_ai_api.obtain_traits(payload):
-            if x.label in phrases.keys():
-                e_traits[x.label].append(x.score)
-            else:
-                e_traits[x.label] = [x.score]
-        for x in expert_ai_api.obtain_traits(payload, taxonomy="behavioral-traits"):
-            if x.label in phrases.keys():
-                b_traits[x.label].append(x.score)
-            else:
-                b_traits[x.label] = [x.score]
+        # Sentiment
+        try:
+            sent.append(expert_ai_api.obtain_sentiment(payload))
+        except ExpertAiRequestError:
+            print("Error sending {}".format(payload))
+            time.sleep(1500)
+        time.sleep(SECONDS_PER_REQUEST)
+        # Key phrases
+        try:
+            for x in expert_ai_api.obtain_key_phrases(payload):
+                if x.value in phrases.keys():
+                    phrases[x.value].append(x.score)
+                else:
+                    phrases[x.value] = [x.score]
+        except ExpertAiRequestError:
+            print("Error sending {}".format(payload))
+            time.sleep(1500)
+        time.sleep(SECONDS_PER_REQUEST)
+        # Emotional traits
+        try:
+            for x in expert_ai_api.obtain_traits(payload):
+                if x.label in phrases.keys():
+                    e_traits[x.label].append(x.score)
+                else:
+                    e_traits[x.label] = [x.score]
+        except ExpertAiRequestError:
+            print("Error sending {}".format(payload))
+            time.sleep(1500)
+        time.sleep(SECONDS_PER_REQUEST)
+        # Behavioral traits
+        try:
+            for x in expert_ai_api.obtain_traits(payload, taxonomy="behavioral-traits"):
+                if x.label in phrases.keys():
+                    b_traits[x.label].append(x.score)
+                else:
+                    b_traits[x.label] = [x.score]
+        except ExpertAiRequestError:
+            print("Error sending {}".format(payload))
+            time.sleep(1500)
+        time.sleep(SECONDS_PER_REQUEST)
+
     phrases, e_traits, b_traits = lists_to_avgs(phrases), lists_to_avgs(e_traits), lists_to_avgs(b_traits)
     return float(np.mean(sent)), phrases, e_traits, b_traits
 

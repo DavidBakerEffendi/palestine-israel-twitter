@@ -26,12 +26,12 @@ def publish_credentials():
 
 def clean_text(text: str) -> List[str]:
     import nltk
-    return nltk.sent_tokenize(text)
+    return [x.strip() for x in nltk.sent_tokenize(text)]
 
 
 def obtain_key_phrases(text: str, language='en') -> List[MainLemma]:
     """
-    Obtains the main keyphrases from the given text.
+    Obtains the main key phrases from the given text.
 
     Example:
 
