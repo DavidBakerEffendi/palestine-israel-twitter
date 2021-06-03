@@ -4,7 +4,7 @@ Expert.ai hackathon submission which uses Twitter data to interpret Palestine-Is
 
 ## Getting Started
 
-All `pip` requirements are found in `requirements.txt`. GeckoDriver needs to be installed for webœscraping websites that
+All `pip` requirements are found in `requirements.txt`. GeckoDriver needs to be installed for web scraping websites that
 use JavaScript.
 
 ## Structure
