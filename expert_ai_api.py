@@ -26,7 +26,9 @@ def publish_credentials():
 
 def clean_text(text: str) -> List[str]:
     import nltk
-    return [x.strip() for x in nltk.sent_tokenize(text)]
+    import re
+    text = re.sub(r"\s+", " ", text, flags=re.UNICODE)
+    return nltk.sent_tokenize(text)
 
 
 def obtain_key_phrases(text: str, language='en') -> List[MainLemma]:
