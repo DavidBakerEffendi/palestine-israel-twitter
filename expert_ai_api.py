@@ -1,6 +1,8 @@
-from typing import List
+from typing import List, Tuple, Dict
 
+import numpy as np
 from expertai.nlapi.cloud.client import ExpertAiClient
+from expertai.nlapi.common.errors import ExpertAiRequestError
 from expertai.nlapi.common.model import Category, MainLemma
 
 import config as conf
@@ -85,3 +87,75 @@ def obtain_traits(text: str, taxonomy='emotional-traits', language='en') -> List
     output = client.classification(body={"document": {"text": text}},
                                    params={'taxonomy': taxonomy, 'language': language})
     return output.categories
+
+
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+
+def lists_to_avgs(d: Dict[str, List[float]]) -> Dict[str, float]:
+    out_dict = {}
+    for k in d.keys():
+        out_dict[k] = float(np.mean(d[k]))
+    return out_dict
+
+
+def analyze_text(text: str) -> Tuple[float, Dict[str, float], Dict[str, float], Dict[str, float]]:
+    sent = []
+    phrases = {}
+    e_traits = {}
+    b_traits = {}
+
+    for chunk in chunks(clean_text(text), 50):
+        payload = " ".join(chunk)
+        # Sentiment
+        try:
+            sent.append(obtain_sentiment(payload))
+        except ExpertAiRequestError as e:
+            print("Error sending {}".format(payload))
+            print(str(e))
+            if "403" in str(e):
+                exit(1)
+
+        # Key phrases
+        try:
+            for x in obtain_key_phrases(payload):
+                if x.value in phrases.keys():
+                    phrases[x.value].append(x.score)
+                else:
+                    phrases[x.value] = [x.score]
+        except ExpertAiRequestError as e:
+            print("Error sending {}".format(payload))
+            print(str(e))
+            if "403" in str(e):
+                exit(1)
+
+        # Emotional traits
+        try:
+            for x in obtain_traits(payload):
+                if x.label in phrases.keys():
+                    e_traits[x.label].append(x.score)
+                else:
+                    e_traits[x.label] = [x.score]
+        except ExpertAiRequestError as e:
+            print("Error sending {}".format(payload))
+            print(str(e))
+            if "403" in str(e):
+                exit(1)
+
+        # Behavioral traits
+        try:
+            for x in obtain_traits(payload, taxonomy="behavioral-traits"):
+                if x.label in phrases.keys():
+                    b_traits[x.label].append(x.score)
+                else:
+                    b_traits[x.label] = [x.score]
+        except ExpertAiRequestError:
+            print("Error sending {}".format(payload))
+            if "403" in str(e):
+                exit(1)
+
+    phrases, e_traits, b_traits = lists_to_avgs(phrases), lists_to_avgs(e_traits), lists_to_avgs(b_traits)
+    return float(np.mean(sent)), phrases, e_traits, b_traits

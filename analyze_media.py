@@ -1,17 +1,8 @@
-import time
-from typing import Tuple, List, Dict
-
 import numpy as np
-
 import pandas as pd
 import json
 
-from expertai.nlapi.common.errors import ExpertAiRequestError
-
 import expert_ai_api
-
-
-SECONDS_PER_REQUEST = 1 / 2
 
 
 def import_data():
@@ -25,70 +16,6 @@ def import_data():
                 else:
                     media[k].append(v)
     return pd.DataFrame(media)
-
-
-def chunks(lst, n):
-    """Yield successive n-sized chunks from lst."""
-    for i in range(0, len(lst), n):
-        yield lst[i:i + n]
-
-
-def lists_to_avgs(d: Dict[str, List[float]]) -> Dict[str, float]:
-    out_dict = {}
-    for k in d.keys():
-        out_dict[k] = float(np.mean(d[k]))
-    return out_dict
-
-
-def analyze_text(text: str) -> Tuple[float, Dict[str, float], Dict[str, float], Dict[str, float]]:
-    sent = []
-    phrases = {}
-    e_traits = {}
-    b_traits = {}
-
-    for chunk in chunks(expert_ai_api.clean_text(text), 50):
-        payload = " ".join(chunk)
-        # Sentiment
-        try:
-            sent.append(expert_ai_api.obtain_sentiment(payload))
-        except ExpertAiRequestError as e:
-            print("Error sending {}".format(payload))
-            print(str(e))
-
-        # Key phrases
-        try:
-            for x in expert_ai_api.obtain_key_phrases(payload):
-                if x.value in phrases.keys():
-                    phrases[x.value].append(x.score)
-                else:
-                    phrases[x.value] = [x.score]
-        except ExpertAiRequestError as e:
-            print("Error sending {}".format(payload))
-            print(str(e))
-
-        # Emotional traits
-        try:
-            for x in expert_ai_api.obtain_traits(payload):
-                if x.label in phrases.keys():
-                    e_traits[x.label].append(x.score)
-                else:
-                    e_traits[x.label] = [x.score]
-        except ExpertAiRequestError as e:
-            print("Error sending {}".format(payload))
-            print(str(e))
-
-        # Behavioral traits
-        try:
-            for x in expert_ai_api.obtain_traits(payload, taxonomy="behavioral-traits"):
-                if x.label in phrases.keys():
-                    b_traits[x.label].append(x.score)
-                else:
-                    b_traits[x.label] = [x.score]
-        except ExpertAiRequestError:
-            print("Error sending {}".format(payload))
-
-    phrases, e_traits, b_traits = lists_to_avgs(phrases), lists_to_avgs(e_traits), lists_to_avgs(b_traits)
-    return float(np.mean(sent)), phrases, e_traits, b_traits
 
 
 if __name__ == "__main__":
@@ -113,7 +40,7 @@ if __name__ == "__main__":
         for _, row in group.iterrows():
             print("{}".format(i), end="...")
             i += 1
-            sent, phrases, e_traits, b_traits = analyze_text(row['text'])
+            sent, phrases, e_traits, b_traits = expert_ai_api.analyze_text(row['text'])
             data['sentiment'].append(sent)
             for k, v in phrases.items():
                 if k not in data['key_phrases'].keys():
@@ -132,9 +59,9 @@ if __name__ == "__main__":
                     data['behavioral_traits'][k].append(v)
         print("")
         data['sentiment'] = np.mean(data['sentiment'])
-        data['key_phrases'] = lists_to_avgs(data['key_phrases'])
-        data['emotional_traits'] = lists_to_avgs(data['emotional_traits'])
-        data['behavioral_traits'] = lists_to_avgs(data['behavioral_traits'])
+        data['key_phrases'] = expert_ai_api.lists_to_avgs(data['key_phrases'])
+        data['emotional_traits'] = expert_ai_api.lists_to_avgs(data['emotional_traits'])
+        data['behavioral_traits'] = expert_ai_api.lists_to_avgs(data['behavioral_traits'])
         results_by_date[str(date)] = data
 
     with open('analyzed_media.json', 'w+') as f:
