@@ -135,7 +135,7 @@ def analyze_text(text: str) -> Tuple[float, Dict[str, float], Dict[str, float], 
         # Emotional traits
         try:
             for x in obtain_traits(payload):
-                if x.label in phrases.keys():
+                if x.label in e_traits.keys():
                     e_traits[x.label].append(x.score)
                 else:
                     e_traits[x.label] = [x.score]
@@ -148,7 +148,7 @@ def analyze_text(text: str) -> Tuple[float, Dict[str, float], Dict[str, float], 
         # Behavioral traits
         try:
             for x in obtain_traits(payload, taxonomy="behavioral-traits"):
-                if x.label in phrases.keys():
+                if x.label in b_traits.keys():
                     b_traits[x.label].append(x.score)
                 else:
                     b_traits[x.label] = [x.score]
