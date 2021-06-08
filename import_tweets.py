@@ -76,7 +76,7 @@ def get_recent_tweets(query: str, next_token=None):
         params['start_time'] = conf.TWEETS_FROM
     if conf.TWEETS_TO is not None:
         params['end_time'] = conf.TWEETS_TO
-    return get("tweets/search/recent", params)
+    return get("tweets/search/all", params)
 
 
 def get_hashtags(f_name: str) -> List[str]:
