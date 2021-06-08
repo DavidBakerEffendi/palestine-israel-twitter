@@ -152,10 +152,14 @@ def analyze_text(text: str) -> Tuple[float, Dict[str, float], Dict[str, float], 
                     b_traits[x.label].append(x.score)
                 else:
                     b_traits[x.label] = [x.score]
-        except ExpertAiRequestError:
+        except ExpertAiRequestError as e:
             print("Error sending {}".format(payload))
+            print(str(e))
             if "403" in str(e):
                 exit(1)
 
     phrases, e_traits, b_traits = lists_to_avgs(phrases), lists_to_avgs(e_traits), lists_to_avgs(b_traits)
-    return float(np.mean(sent)), phrases, e_traits, b_traits
+    avg_sent = 0.0
+    if len(sent) > 0:
+        avg_sent = float(np.mean(sent))
+    return avg_sent, phrases, e_traits, b_traits

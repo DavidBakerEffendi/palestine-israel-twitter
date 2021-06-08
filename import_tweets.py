@@ -65,8 +65,6 @@ def get_recent_tweets(query: str, next_token=None):
     params = {
         'query': query,
         'max_results': MAX_RESULTS,
-        'start_time': (dt.datetime.now() - dt.timedelta(days=1)).astimezone().isoformat(),
-        # 'end_time': (dt.datetime.now() - dt.timedelta(days=2)).astimezone().isoformat(),
         'expansions': 'author_id,geo.place_id',
         'place.fields': 'country',
         'user.fields': 'id,location,verified',
