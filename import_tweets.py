@@ -1,15 +1,17 @@
 from typing import Dict, List
-import datetime as dt
 import config as conf
 import requests
 import time
 import json
+import re
 
 URL = "https://api.twitter.com/2"
-REQUEST_CAP = 450
+REQUEST_CAP = 300
 REQUEST_WINDOW = 15 * 60.0  # 15 minute window
 SECONDS_PER_REQUEST = (REQUEST_WINDOW + 1) / REQUEST_CAP  # Add a bit of slack
-MAX_RESULTS = 100
+MAX_RESULTS = 500
+TWEETS_FILE = "tweets.json"
+USERS_FILE = "users.json"
 
 
 def headers() -> Dict[str, str]:
@@ -41,13 +43,13 @@ def pull_data(query):
 
         try:
             tweets = res['data']
-            write_to_file('tweets.txt', tweets)
+            write_to_file(TWEETS_FILE, tweets)
         except:
             print("Error while writing tweets from {}".format(res))
 
         try:
             users = res['includes']['users']
-            write_to_file('users.txt', users)
+            write_to_file(USERS_FILE, users)
         except:
             print("Error while writing users from {}".format(res))
 
@@ -91,16 +93,35 @@ def write_to_file(f_name: str, input_collection, w_flag='a+'):
 
 
 def dedup_datasets():
-    with open('tweets.txt', 'r') as f:
+    blacklisted_authors = ["1390401696329871363"]
+    with open(TWEETS_FILE, 'r') as f:
         l = {}
         for line in f.readlines():
-            l[line] = json.loads(line)
-    write_to_file('./tweets.txt', l.values(), 'w+')
-    with open('users.txt', 'r') as f:
+            skip = False
+            # Some authors just post noise
+            for a in blacklisted_authors:
+                if '"author_id": "{}"'.format(a) in line:
+                    print("Skip")
+                    skip = True
+            if skip:
+                continue
+            j = json.loads(remove_unicode(line))
+            if j["lang"] != "en":
+                skip = True
+            if not skip:
+                l[j["id"]] = j
+    write_to_file(TWEETS_FILE, l.values(), 'w+')
+    with open(USERS_FILE, 'r') as f:
         l = {}
         for line in f.readlines():
-            l[line] = json.loads(line)
-    write_to_file('./users.txt', l.values(), 'w+')
+            j = json.loads(line)
+            l[j["id"]] = j
+    write_to_file(USERS_FILE, l.values(), 'w+')
+
+
+def remove_unicode(text):
+    text = re.sub(r'\\u[\w]{4,5}', "", text).strip()
+    return text
 
 
 if __name__ == "__main__":

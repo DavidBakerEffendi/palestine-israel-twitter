@@ -1,3 +1,4 @@
+import time
 from typing import List, Tuple, Dict
 
 import numpy as np
@@ -157,6 +158,8 @@ def analyze_text(text: str) -> Tuple[float, Dict[str, float], Dict[str, float], 
             print(str(e))
             if "403" in str(e):
                 exit(1)
+
+        time.sleep(1.0 / 10.0)  # Limit to 10 requests per second
 
     phrases, e_traits, b_traits = lists_to_avgs(phrases), lists_to_avgs(e_traits), lists_to_avgs(b_traits)
     avg_sent = 0.0

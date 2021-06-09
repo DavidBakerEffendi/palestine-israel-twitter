@@ -1,4 +1,4 @@
-from typing import Tuple, List, Dict, Set
+from typing import Tuple, List, Set
 import re
 import pandas as pd
 import json
@@ -12,13 +12,13 @@ def import_data():
     with open("tweets.json", "r") as f:
         for line in f.readlines():
             d = json.loads(line)
-            if d["lang"] == "en":
-                for (k, v) in d.items():
-                    if k in keys_wanted:
-                        if k not in media.keys():
-                            media[k] = [v]
-                        else:
-                            media[k].append(v)
+
+            for (k, v) in d.items():
+                if k in keys_wanted:
+                    if k not in media.keys():
+                        media[k] = [v]
+                    else:
+                        media[k].append(v)
     return pd.DataFrame(media)
 
 
