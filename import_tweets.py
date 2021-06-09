@@ -101,7 +101,6 @@ def dedup_datasets():
             # Some authors just post noise
             for a in blacklisted_authors:
                 if '"author_id": "{}"'.format(a) in line:
-                    print("Skip")
                     skip = True
             if skip:
                 continue
