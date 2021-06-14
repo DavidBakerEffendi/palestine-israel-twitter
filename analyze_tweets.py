@@ -52,20 +52,6 @@ def load_tags() -> Tuple[List[str], List[str], List[str]]:
     return neu, pro_israel, pro_palestine
 
 
-def determine_bias(text: str, neu: List[str], pro_is: List[str], pro_pa: List[str]) -> (int, int, int):
-    neu_bias, pro_is_bias, pro_pa_bias = 0, 0, 0
-    for w in neu:
-        if w in text:
-            neu_bias += 1
-    for w in pro_is:
-        if w in text:
-            pro_is_bias += 1
-    for w in pro_pa:
-        if w in text:
-            pro_pa_bias += 1
-    return pro_pa_bias, neu_bias, pro_is_bias
-
-
 if __name__ == "__main__":
     df = import_data()
     expert_ai_api.check_dependencies()
@@ -79,7 +65,6 @@ if __name__ == "__main__":
         if row["id"] not in existing:
             t = re.sub(r"RT @\w+:", "", row['text'])
             sent, phrases, e_traits, b_traits = expert_ai_api.analyze_text(t)
-            pab, nb, isb = determine_bias(t, neu, pro_is, pro_pa)
             out = {
                 "date": row["created_at"][:10],
                 "author_id": row["author_id"],
@@ -87,7 +72,6 @@ if __name__ == "__main__":
                 "sentiment": sent,
                 "key_phrases": phrases,
                 "emotional_traits": e_traits,
-                "behavioral_traits": b_traits,
-                "bias": [pab, nb, isb]
+                "behavioral_traits": b_traits
             }
             write_to_file(out)
