@@ -5,3 +5,4 @@ lxml==4.6.3
 selenium==3.141.0
 pandas==1.2.4
 nltk
+dash
