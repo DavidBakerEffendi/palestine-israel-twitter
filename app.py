@@ -5,7 +5,6 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 import json
 
-
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.UNITED])
 EXPERT_AI_FAVICON = "https://developer.expert.ai/ui/faviconExpert.ico"
 
@@ -63,16 +62,17 @@ navbar = dbc.NavbarSimple(
     dark=True,
 )
 
-
 app.layout = html.Div(children=[
     navbar,
     dbc.Container(children=[
         html.H2(children='Introduction', style={'margin': '2em 0em 1em 0em'}),
-        html.P(children=['On May 10 2021 an outbreak of violence, looting, rocket attacks and protests commenced in '
-                         'the ongoing Israeli-Palestinian conflict over the Gaza strip. The vector that began the '
-                         'main events of May\'s crisis was on May 6 when a group of Palestinians began to protest in '
-                         'East Jerusalem. This was in response to the trial happening in the Supreme Court of Israel '
-                         'on the eviction of six Palestinian families in Sheikh Jarrah.']),
+        html.P(children="""
+        On May 10 2021 an outbreak of violence, looting, rocket attacks and protests commenced in 
+        the ongoing Israeli-Palestinian conflict over the Gaza strip. The vector that began the ' main events of 
+        May\'s crisis was on May 6 when a group of Palestinians began to protest in East Jerusalem. This was in 
+        response to the trial happening in the Supreme Court of Israel on the eviction of six Palestinian families in 
+        Sheikh Jarrah.
+        """),
         sentiment_graph,
     ])
 ])
