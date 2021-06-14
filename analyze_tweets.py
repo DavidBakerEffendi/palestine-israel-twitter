@@ -40,13 +40,13 @@ def load_tags() -> Tuple[List[str], List[str], List[str]]:
     neu = []
     pro_israel = []
     pro_palestine = []
-    with open("resources/neutral.txt", "r") as f:
+    with open("assets/neutral.txt", "r") as f:
         for line in f.readlines():
             neu.append(line.strip())
-    with open("resources/pro_israel.txt", "r") as f:
+    with open("assets/pro_israel.txt", "r") as f:
         for line in f.readlines():
             pro_israel.append(line.strip())
-    with open("resources/pro_palestine.txt", "r") as f:
+    with open("assets/pro_palestine.txt", "r") as f:
         for line in f.readlines():
             pro_palestine.append(line.strip())
     return neu, pro_israel, pro_palestine

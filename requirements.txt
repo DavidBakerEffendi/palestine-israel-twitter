@@ -6,3 +6,4 @@ selenium==3.141.0
 pandas==1.2.4
 nltk
 dash
+dash-bootstrap-components
