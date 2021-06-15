@@ -181,7 +181,7 @@ def scraped_data(media_data: Dict[dt.datetime, Dict[str, List[str]]]) -> Dict[dt
 
 def export_to_csv(scraped_data: Dict[dt.datetime, Dict[str, List[Tuple[str, str]]]]):
     import json
-    with open('media.json', 'w') as f:
+    with open('../media.json', 'w') as f:
         for (date, media_data) in scraped_data.items():
             for (media, articles) in media_data.items():
                 for (u, a) in articles:

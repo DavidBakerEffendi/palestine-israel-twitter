@@ -9,7 +9,7 @@ import expert_ai_api
 def import_data():
     media = {}
     keys_wanted = ["author_id", "id", "created_at", "text"]
-    with open("tweets.json", "r") as f:
+    with open("../tweets.json", "r") as f:
         for line in f.readlines():
             d = json.loads(line)
 
@@ -24,7 +24,7 @@ def import_data():
 
 def get_existing_ids() -> Set[str]:
     out = set()
-    with open("analyzed_tweets.json", "r+") as f:
+    with open("../analyzed_tweets.json", "r+") as f:
         for line in f.readlines():
             d = json.loads(line)
             out.add(d["id"])
@@ -32,7 +32,7 @@ def get_existing_ids() -> Set[str]:
 
 
 def write_to_file(d: dict):
-    with open("analyzed_tweets.json", "a+") as f:
+    with open("../analyzed_tweets.json", "a+") as f:
         f.write(json.dumps(d) + "\n")
 
 
@@ -40,13 +40,13 @@ def load_tags() -> Tuple[List[str], List[str], List[str]]:
     neu = []
     pro_israel = []
     pro_palestine = []
-    with open("assets/neutral.txt", "r") as f:
+    with open("../assets/neutral.txt", "r") as f:
         for line in f.readlines():
             neu.append(line.strip())
-    with open("assets/pro_israel.txt", "r") as f:
+    with open("../assets/pro_israel.txt", "r") as f:
         for line in f.readlines():
             pro_israel.append(line.strip())
-    with open("assets/pro_palestine.txt", "r") as f:
+    with open("../assets/pro_palestine.txt", "r") as f:
         for line in f.readlines():
             pro_palestine.append(line.strip())
     return neu, pro_israel, pro_palestine

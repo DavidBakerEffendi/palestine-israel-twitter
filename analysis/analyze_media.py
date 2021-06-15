@@ -7,7 +7,7 @@ import expert_ai_api
 
 def import_data():
     media = {}
-    with open("media.json", "r") as f:
+    with open("../media.json", "r") as f:
         for line in f.readlines():
             d = json.loads(line)
             for (k, v) in d.items():
@@ -64,7 +64,7 @@ if __name__ == "__main__":
         data['behavioral_traits'] = expert_ai_api.lists_to_avgs(data['behavioral_traits'])
         results_by_date[str(date)] = data
 
-    with open('analyzed_media.json', 'w+') as f:
+    with open('../analyzed_media.json', 'w+') as f:
         for date, results in results_by_date.items():
             d = {}
             for k, v in results.items():

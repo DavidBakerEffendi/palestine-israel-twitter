@@ -10,8 +10,8 @@ REQUEST_CAP = 300
 REQUEST_WINDOW = 15 * 60.0  # 15 minute window
 SECONDS_PER_REQUEST = (REQUEST_WINDOW + 1) / REQUEST_CAP  # Add a bit of slack
 MAX_RESULTS = 500
-TWEETS_FILE = "tweets.json"
-USERS_FILE = "users.json"
+TWEETS_FILE = "../tweets.json"
+USERS_FILE = "../users.json"
 
 
 def headers() -> Dict[str, str]:
