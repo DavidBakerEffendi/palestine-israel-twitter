@@ -10,7 +10,7 @@ def plotly_wordcloud(words: Dict[str, int]):
     frequency = [((x - min(words.values())) / (max(words.values()) - min(words.values()))) * (upper - lower) + lower
                  for x in words.values()]
 
-    percent = list(map(lambda x: x / sum(frequency), frequency))
+    percent = list(map(lambda x: (x / sum(frequency)) - 0.01, frequency))
 
     length = len(words.keys())
     colors = [py.colors.DEFAULT_PLOTLY_COLORS[random.randrange(1, 10)] for _ in range(length)]
@@ -33,6 +33,7 @@ def plotly_wordcloud(words: Dict[str, int]):
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         autosize=True,
+        margin={'t': 0.5, 'b': 0.5, 'l': 0, 'r': 0},
     )
     padding = 0.3
     fig = go.Figure(
