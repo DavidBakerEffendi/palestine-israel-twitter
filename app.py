@@ -2,6 +2,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
+import numpy as np
 import pandas as pd
 import json
 
@@ -26,33 +27,80 @@ def import_data(f_name: str):
     return pd.DataFrame(data)
 
 
-media_df = import_data("analyzed_media.json")
-twitter_df = import_data("analyzed_tweets.json")
+def remove_outlier(df_in, col_name):
+    """Uses z-score"""
+    return df_in[((df_in[col_name] - df_in[col_name].mean()) / df_in[col_name].std()).abs() < 3]
 
-twitter_mean = {}
-twitter_stderr = {}
+
+media_df = import_data("analyzed_media.json")
+twitter_df = remove_outlier(import_data("analyzed_tweets.json"), 'sentiment')
+
+
+twitter_info = {}
+
 for d, g in twitter_df.sort_values(['date']).groupby('date'):
-    twitter_mean[d] = g['sentiment'].mean()
-    twitter_stderr[d] = g['sentiment'].std()
+    all_kps = {}
+    for kps in g['key_phrases']:
+        for k, v in kps.items():
+            if '@' in k:
+                continue
+            if k not in all_kps.keys():
+                all_kps[k] = [v]
+            else:
+                all_kps[k].append(v)
+    for k, v in all_kps.items():
+        all_kps[k] = np.mean(v)
+
+    twitter_info[d] = {
+        "sentiment": g['sentiment'],
+        "key_phrases": dict(sorted(all_kps.items(), key=lambda item: item[1])[:50], reverse=True),
+        "emotional_traits": {},
+        "behavioral_traits": {}
+    }
+
 
 # https://plotly.com/python/continuous-error-bars/
 
+import plotly.graph_objects as go
+
 sentiment_graph = dcc.Graph(
-    id='example-graph',
-    figure={
-        'data': [
-            {'x': media_df['date'], 'y': media_df['sentiment'], 'type': 'line', 'name': 'Media Sentiment'},
-            {'x': list(twitter_mean.keys()),
-             'y': list(twitter_mean.values()),
-             'y-err': list(twitter_stderr.values()),
-             'type': 'line',
-             'name': 'Twitter Sentiment'},
-        ],
-        'layout': {
+    id='sentiment-graph',
+    figure=go.Figure(
+        layout={
             'title': 'Twitter vs Media Sentiment'
-        }
-    }
+        },
+        data=[
+            go.Scatter(
+                name='Twitter Sentiment',
+                x=list(twitter_info.keys()),
+                y=[x['sentiment'].mean() for x in twitter_info.values()],
+                error_y=dict(
+                    array=[x['sentiment'].std() for x in twitter_info.values()],
+                    visible=True)
+            ),
+            go.Scatter(
+                name='Media Sentiment',
+                x=media_df['date'],
+                y=media_df['sentiment'],
+                # error_y=dict(
+                #     type='data', # value of error bar given in data coordinates
+                #     array=list(twitter_stderr.values()),
+                #     visible=True)
+            )
+        ]
+    )
 )
+
+
+import datetime as dt
+
+key_phrases_tabs = [
+    dbc.Tab(
+        dcc.Graph(id='twitter-{}-wordcloud'.format(d), figure=components.plotly_wordcloud(x['key_phrases'])),
+        label="May {}".format(dt.datetime.fromisoformat(d).day)
+    )
+    for d, x in twitter_info.items()
+]
 
 navbar = dbc.NavbarSimple(
     children=[
@@ -76,7 +124,7 @@ app.layout = html.Div(children=[
         Sheikh Jarrah.
         """),
         sentiment_graph,
-        dcc.Graph(id='test-wordcloud', figure=components.plotly_wordcloud({"test": 3, "balls": 5, "deeznuts": 10})),
+        dbc.Tabs(key_phrases_tabs),
     ])
 ])
 
