@@ -82,7 +82,7 @@ def get_recent_tweets(query: str, next_token=None):
 
 
 def get_hashtags(f_name: str) -> List[str]:
-    with open(f_name, 'r') as f:
+    with open("./assets/{}".format(f_name), 'r') as f:
         return f.read().splitlines()
 
 
