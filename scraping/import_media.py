@@ -14,8 +14,6 @@ from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.support.ui import WebDriverWait
 
-import expert_ai_api
-
 
 def read_files(path: str) -> Set[str]:
     try:

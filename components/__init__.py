@@ -1,6 +1,11 @@
+import numpy as np
 import plotly as py
 import plotly.graph_objs as go
 import random
+import dash_core_components as dcc
+import dash_html_components as html
+import dash_bootstrap_components as dbc
+import datetime as dt
 
 from typing import Dict
 
@@ -10,13 +15,17 @@ def plotly_wordcloud(words: Dict[str, int]):
     frequency = [((x - min(words.values())) / (max(words.values()) - min(words.values()))) * (upper - lower) + lower
                  for x in words.values()]
 
-    percent = list(map(lambda x: (x / sum(frequency)) - 0.01, frequency))
+    if np.isnan(np.sum(frequency)):
+        frequency = [100]
+
+    percent = list(map(lambda x: x / sum(frequency), frequency))
 
     length = len(words.keys())
     colors = [py.colors.DEFAULT_PLOTLY_COLORS[random.randrange(1, 10)] for _ in range(length)]
 
     xs = list(range(length))
     ys = random.choices(range(length), k=length)
+
     data = go.Scatter(
         x=xs,
         y=ys,
@@ -44,3 +53,31 @@ def plotly_wordcloud(words: Dict[str, int]):
     )
 
     return fig
+
+
+def create_wordcloud_tabs(twitter_info: dict, key: str):
+    for d, x in twitter_info.items():
+        print(x[key])
+        plotly_wordcloud(x[key])
+    return [
+        dbc.Tab(
+            dbc.Card(
+                dbc.CardBody(
+                    dbc.Row([
+                        dbc.Col(dcc.Graph(id='twitter-{}-{}-wordcloud'.format(key, d),
+                                          figure=plotly_wordcloud(x[key])), width="12", lg="auto"),
+                        dbc.Col([
+                            html.H5("Top key phrases"),
+                            html.Ul(
+                                [html.Li("{}".format(phrase, p)) for phrase, p in
+                                 list(sorted(x[key].items(), key=lambda item: item[1], reverse=True))[:15]]
+                            )]
+                            , width="4")
+                    ]),
+                ),
+                className="mt-2",
+            ),
+            label="May {}".format(dt.datetime.fromisoformat(d).day)
+        )
+        for d, x in twitter_info.items()
+    ]

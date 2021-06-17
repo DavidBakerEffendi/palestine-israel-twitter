@@ -5,6 +5,9 @@ import dash_bootstrap_components as dbc
 import numpy as np
 import pandas as pd
 import json
+import nltk
+from nltk.corpus import stopwords
+import plotly.graph_objects as go
 
 import components
 
@@ -35,33 +38,56 @@ def remove_outlier(df_in, col_name):
 media_df = import_data("analyzed_media.json")
 twitter_df = remove_outlier(import_data("analyzed_tweets.json"), 'sentiment')
 
-
 twitter_info = {}
+
+try:
+    nltk.data.find('corpora/stopwords')
+except LookupError:
+    nltk.download('stopwords')
+
+stop_words = set(stopwords.words('english'))
 
 for d, g in twitter_df.sort_values(['date']).groupby('date'):
     all_kps = {}
+    e_traits = {}
+    b_traits = {}
     for kps in g['key_phrases']:
         for k, v in kps.items():
-            if '@' in k:
+            if '@' in k or v in stop_words or len(k) < 4:
                 continue
             if k not in all_kps.keys():
                 all_kps[k] = [v]
             else:
                 all_kps[k].append(v)
     for k, v in all_kps.items():
-        all_kps[k] = np.mean(v)
+        all_kps[k] = np.sum(v)
+    for kps in g['emotional_traits']:
+        for k, v in kps.items():
+            if k not in e_traits.keys():
+                e_traits[k] = [v]
+            else:
+                e_traits[k].append(v)
+    for k, v in e_traits.items():
+        e_traits[k] = np.nansum(v)
+    for kps in g['behavioral_traits']:
+        for k, v in kps.items():
+            if k not in b_traits.keys():
+                b_traits[k] = [v]
+            else:
+                b_traits[k].append(v)
+    for k, v in b_traits.items():
+        b_traits[k] = np.nansum(v)
+
+    kp_entry = dict(sorted(all_kps.items(), key=lambda item: item[1], reverse=True)[:50])
+    e_entry = dict(sorted(e_traits.items(), key=lambda item: item[1], reverse=True)[:50])
+    b_entry = dict(sorted(b_traits.items(), key=lambda item: item[1], reverse=True)[:50])
 
     twitter_info[d] = {
         "sentiment": g['sentiment'],
-        "key_phrases": dict(sorted(all_kps.items(), key=lambda item: item[1])[:50], reverse=True),
-        "emotional_traits": {},
-        "behavioral_traits": {}
+        "key_phrases": kp_entry,
+        "emotional_traits": e_entry,
+        "behavioral_traits": b_entry
     }
-
-
-# https://plotly.com/python/continuous-error-bars/
-
-import plotly.graph_objects as go
 
 sentiment_graph = dcc.Graph(
     id='sentiment-graph',
@@ -92,15 +118,9 @@ sentiment_graph = dcc.Graph(
 )
 
 
-import datetime as dt
-
-key_phrases_tabs = [
-    dbc.Tab(
-        dcc.Graph(id='twitter-{}-wordcloud'.format(d), figure=components.plotly_wordcloud(x['key_phrases'])),
-        label="May {}".format(dt.datetime.fromisoformat(d).day)
-    )
-    for d, x in twitter_info.items()
-]
+key_phrases_tabs = components.create_wordcloud_tabs(twitter_info, 'key_phrases')
+e_traits_tabs = components.create_wordcloud_tabs(twitter_info, 'emotional_traits')
+b_traits_tabs = components.create_wordcloud_tabs(twitter_info, 'behavioral_traits')
 
 navbar = dbc.NavbarSimple(
     children=[
@@ -112,19 +132,42 @@ navbar = dbc.NavbarSimple(
     dark=True,
 )
 
+introduction = [
+    """
+    On May 10 2021 an outbreak of violence, looting, rocket attacks and protests commenced in 
+    the ongoing Israeli-Palestinian conflict over the Gaza strip. The vector that began the main events of 
+    May\'s crisis was on May 6 when a group of Palestinians began to protest in East Jerusalem. This was in 
+    response to the trial happening in the Supreme Court of Israel on the eviction of six Palestinian families in 
+    Sheikh Jarrah. This eviction is long legal battle against right-wing Jewish Israelis trying to acquire property in 
+    the neighbourhood. Sheikh Jarrah is a primarily Palestinian neighbourhood but it is effectively annexed by Israel 
+    and under military control. 
+    """,
+    """
+    
+    """
+]
+
 app.layout = html.Div(children=[
     navbar,
     dbc.Container(children=[
-        html.H2(children='Introduction', style={'margin': '2em 0em 1em 0em'}),
-        html.P(children="""
-        On May 10 2021 an outbreak of violence, looting, rocket attacks and protests commenced in 
-        the ongoing Israeli-Palestinian conflict over the Gaza strip. The vector that began the main events of 
-        May\'s crisis was on May 6 when a group of Palestinians began to protest in East Jerusalem. This was in 
-        response to the trial happening in the Supreme Court of Israel on the eviction of six Palestinian families in 
-        Sheikh Jarrah.
-        """),
+        dbc.Alert(
+            "This project is written to be as unbiased as possible and to simply present the facts. The events in this "
+            "piece are recent and the pain may still be raw for some. This is both educational and should provide "
+            "some interesting insights to how mainstream media and Twitter users react to the events of the 2021 "
+            "Israel–Palestine crisis.",
+            color="primary",
+            style={'margin': '2em 0em 1em 0em'}
+        ),
+        html.H2(children='Introduction'),
+        *[html.P(children=x) for x in introduction],
+        html.H2(children='Method'),
+        html.H2(children='Results'),
+        html.H3(children='Sentiment Analysis'),
         sentiment_graph,
+        html.H3(children='Key Phrases and Traits'),
         dbc.Tabs(key_phrases_tabs),
+        dbc.Tabs(e_traits_tabs),
+        dbc.Tabs(b_traits_tabs),
     ])
 ])
 

@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import json
 
-import expert_ai_api
+from analysis import expert_ai_api
 
 
 def import_data():
