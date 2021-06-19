@@ -48,6 +48,8 @@ except LookupError:
 stop_words = set(stopwords.words('english'))
 
 for d, g in twitter_df.sort_values(['date']).groupby('date'):
+    if d == '2021-05-07':
+        continue
     all_kps = {}
     e_traits = {}
     b_traits = {}
