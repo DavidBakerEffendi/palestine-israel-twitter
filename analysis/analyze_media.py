@@ -1,4 +1,5 @@
-import numpy as np
+from typing import Set
+
 import pandas as pd
 import json
 
@@ -7,7 +8,7 @@ from analysis import expert_ai_api
 
 def import_data():
     media = {}
-    with open("../media.json", "r") as f:
+    with open("./media.json", "r") as f:
         for line in f.readlines():
             d = json.loads(line)
             for (k, v) in d.items():
@@ -18,6 +19,15 @@ def import_data():
     return pd.DataFrame(media)
 
 
+def get_existing_ids() -> Set[str]:
+    out = set()
+    with open("./analyzed_media.json", "r+") as f:
+        for line in f.readlines():
+            d = json.loads(line)
+            out.add(d["url"])
+    return out
+
+
 if __name__ == "__main__":
     df = import_data()
     expert_ai_api.check_dependencies()
@@ -26,48 +36,30 @@ if __name__ == "__main__":
     results_by_date = {}
     grps_by_date = df.groupby(["date"])
 
+    existing = get_existing_ids()
     for date, group in grps_by_date:
         expert_ai_api.publish_credentials()
         print("Processing data for {}".format(date))
-        data = {
-            'sentiment': [],
-            'key_phrases': {},
-            'emotional_traits': {},
-            'behavioral_traits': {}
-        }
         i = 1
+        results_by_date[str(date)] = []
         print("Processing row: ", end="")
         for _, row in group.iterrows():
-            print("{}".format(i), end="...")
-            i += 1
-            sent, phrases, e_traits, b_traits = expert_ai_api.analyze_text(row['text'])
-            data['sentiment'].append(sent)
-            for k, v in phrases.items():
-                if k not in data['key_phrases'].keys():
-                    data['key_phrases'][k] = [v]
-                else:
-                    data['key_phrases'][k].append(v)
-            for k, v in e_traits.items():
-                if k not in data['emotional_traits'].keys():
-                    data['emotional_traits'][k] = [v]
-                else:
-                    data['emotional_traits'][k].append(v)
-            for k, v in b_traits.items():
-                if k not in data['behavioral_traits'].keys():
-                    data['behavioral_traits'][k] = [v]
-                else:
-                    data['behavioral_traits'][k].append(v)
-        print("")
-        data['sentiment'] = np.mean(data['sentiment'])
-        data['key_phrases'] = expert_ai_api.lists_to_avgs(data['key_phrases'])
-        data['emotional_traits'] = expert_ai_api.lists_to_avgs(data['emotional_traits'])
-        data['behavioral_traits'] = expert_ai_api.lists_to_avgs(data['behavioral_traits'])
-        results_by_date[str(date)] = data
+            if row["url"] not in existing:
+                print("{}".format(i), end="...")
+                i += 1
+                sent, phrases, e_traits, b_traits = expert_ai_api.analyze_text(row['text'])
+                results_by_date[str(date)].append({
+                    'url': row['url'],
+                    'sentiment': sent,
+                    'key_phrases': phrases,
+                    'emotional_traits': e_traits,
+                    'behavioral_traits': b_traits
+                })
 
-    with open('../analyzed_media.json', 'w+') as f:
+    with open('../analyzed_media.json', 'a+') as f:
         for date, results in results_by_date.items():
-            d = {}
-            for k, v in results.items():
-                d[k] = v
-            d['date'] = str(date)
-            f.write(json.dumps(d) + "\n")
+            for r in results:
+                d = {'date': str(date)}
+                for k, v in r.items():
+                    d[k] = v
+                f.write(json.dumps(d) + "\n")
