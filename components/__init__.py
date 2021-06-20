@@ -75,7 +75,7 @@ def create_wordcloud_tabs(twitter_info: dict, key: str):
                 )],
                 className="mt-2",
             ),
-            label="May {}".format(dt.datetime.fromisoformat(d).day)
+            label="{}-05".format(dt.datetime.fromisoformat(d).day)
         )
         for d, x in twitter_info.items()
     ]

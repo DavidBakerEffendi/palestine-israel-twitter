@@ -175,10 +175,19 @@ introduction_conflict_2 = [
 
 introduction_problem = [
     """
-    The crisis is one deeply rooted in political and religious debate in the ongoing Israeli-Palestinian conflict which 
-    began in 1964. Opinions of the crisis from both sides are often either partially
-    informed or uninformed and one being being directly or indirectly affected by either Israel or Palestine's actions.
-    The affect this has on the spread of information is often that of misinformation or biased viewpoints.
+    The crisis is one deeply rooted in political and religious debate in the ongoing Israeli-Palestinian conflict,
+    marked as taking place since the mid-20th century. Opinions of the crisis from both sides are vocal on social media 
+    followed with day-to-day mainstream media coverage. Both the mainstream media and public opinion are vulnerable to
+    bias and misinformation. While bias requires more advanced context-specific techniques to analyze, we can already 
+    mine sentiment and opinion.
+    """,
+    """
+    In this project we would like to mine the sentiment, behavioural, and emotional traits from Tweets
+    and articles by various media outlets. Both Twitter and media outlets produce masses of data that require 
+    sophisticated processing techniques. We hope to identify: (i) Patterns which may or may not exist between the public
+    and the media i.e. whether the media influences the masses or whether the media misrepresents public opinion on 
+    divisive matters. (ii) Whether the media would step outside the bounds of objectivity towards an emotional response
+    if pushed by mounting public pressure.
     """
 ]
 
