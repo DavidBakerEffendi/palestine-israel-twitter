@@ -56,7 +56,7 @@ if __name__ == "__main__":
                     'behavioral_traits': b_traits
                 })
 
-    with open('../analyzed_media.json', 'a+') as f:
+    with open('./analyzed_media.json', 'a+') as f:
         for date, results in results_by_date.items():
             for r in results:
                 d = {'date': str(date)}

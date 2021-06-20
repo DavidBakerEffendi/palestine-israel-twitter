@@ -134,7 +134,7 @@ navbar = dbc.NavbarSimple(
     dark=True,
 )
 
-introduction = [
+introduction_conflict_1 = [
     """
     On May 10 2021 an outbreak of violence, looting, rocket attacks and protests commenced in 
     the ongoing Israeli-Palestinian conflict over the Gaza strip. The vector that began the main events of 
@@ -145,7 +145,40 @@ introduction = [
     and under military control. 
     """,
     """
-    
+    As anger grew around the potential eviction, Palestinian youth began throwing rocks at Israeli police force from
+    Jerusalem’s Al-Aqsa Mosque. Al-Aqsa Mosque is considered Islam's third holiest site and is also known as Temple 
+    Mount. Hundreds of police responded with firing rubber bullets and stun grenades at thousands of Palestinians which 
+    resulted in 205 Palestinians and 17 officers being injured. Already at this point had the violence drawn 
+    international protests and calls for peace from world leaders.
+    """,
+]
+
+introduction_conflict_2 = [
+    """
+    The clashes coincided with Qadr Night (8 May) and Jerusalem Day (9-10 May) observed by Muslims and Jews 
+    respectively. At this point more than 700 Palestinians were injured. By 10 May Hamas, a Palestinian Sunni-Islamic 
+    fundamentalist, militant, and nationalist organization, gave Israel an ultimatum to withdraw security forces from 
+    Temple Mount and Sheikh Jarrah by 6PM otherwise consequences will follow. The ultimatum was not met with a response 
+    and Hamas proceeded to launch rockets at Israel of which most were intercepted by Israel's Iron Dome defense system.
+    Those of which managed to pass through hit residences and a school. Israel responded with multiple airstrikes 
+    against Gaza demolishing buildings including schools, hospitals, and refugee camps. On 13 May Hamas first proposed a 
+    ceasefire which was rejected by Israeli prime minister Benjamin Netanyahu.
+    """,
+    """
+    The period between 10 May and the initial cease-fire on 21 May left 256 Palestinians including 66 children dead, 
+    whereas Israel was left with at least 13 deaths, two of which were children. Casualties and displaced civilians were
+    majority Palestinian. By 21 May a ceasefire came into effect, but this was ultimately broken on 16 June when Hamas
+    launched incendiary balloons into Israel. The Israeli Air Force responded by carrying out multiple airstrikes in the 
+    Gaza strip.
+    """
+]
+
+introduction_problem = [
+    """
+    The crisis is one deeply rooted in political and religious debate in the ongoing Israeli-Palestinian conflict which 
+    began in 1964. Opinions of the crisis from both sides are often either partially
+    informed or uninformed and one being being directly or indirectly affected by either Israel or Palestine's actions.
+    The affect this has on the spread of information is often that of misinformation or biased viewpoints.
     """
 ]
 
@@ -161,7 +194,33 @@ app.layout = html.Div(children=[
             style={'margin': '2em 0em 1em 0em'}
         ),
         html.H2(children='Introduction'),
-        *[html.P(children=x) for x in introduction],
+        html.P(["""
+        The following introduction will cover both the socio-political scenario that is the 2021 Israel-Palestine crisis
+        and the structure of how the resulting data from the public is processed. The introduction is then followed by
+        the method and results of the processing the data using""", html.I("expert.ai"), """'s natural language 
+        processing API. At the end we conclude our findings and explain potential future work on this kind of data.
+        """]),
+        html.H3("The Conflict of May 2021"),
+        *[html.P(children=x) for x in introduction_conflict_1],
+        dbc.Row([
+            dbc.Col(width="0", lg="1"),
+            dbc.Col([
+                dbc.Card(
+                    dbc.CardImg(
+                        src="https://ichef.bbci.co.uk/news/976/cpsprodpb/B64F/production/_118517664_gettyimages-1232873479.jpg",
+                        top=True,
+                        className='align-self-center',
+                        style={"height": "25rem"},
+                    ),
+                ),
+                html.P("Iron Dome defense system (L) intercepts rockets (R) fired by Hamas on 10 May. (Photo by ANAS"
+                       " BABA/AFP via Getty Images)", className="card-footer")
+            ], width="12", lg="10"),
+            dbc.Col(width="0", lg="1"),
+        ]),
+        *[html.P(children=x) for x in introduction_conflict_2],
+        html.H3("Problem Statement"),
+        *[html.P(children=x) for x in introduction_problem],
         html.H2(children='Method'),
         html.H2(children='Results'),
         html.H3(children='Sentiment Analysis'),

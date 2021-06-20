@@ -56,25 +56,23 @@ def plotly_wordcloud(words: Dict[str, int]):
 
 
 def create_wordcloud_tabs(twitter_info: dict, key: str):
-    for d, x in twitter_info.items():
-        print(x[key])
-        plotly_wordcloud(x[key])
     return [
         dbc.Tab(
-            dbc.Card(
+            dbc.Card([
+                dbc.CardHeader("Twitter"),
                 dbc.CardBody(
                     dbc.Row([
                         dbc.Col(dcc.Graph(id='twitter-{}-{}-wordcloud'.format(key, d),
                                           figure=plotly_wordcloud(x[key])), width="12", lg="auto"),
                         dbc.Col([
-                            html.H5("Top key phrases"),
+                            html.H5("Top Results"),
                             html.Ul(
                                 [html.Li("{}".format(phrase, p)) for phrase, p in
                                  list(sorted(x[key].items(), key=lambda item: item[1], reverse=True))[:15]]
                             )]
                             , width="4")
                     ]),
-                ),
+                )],
                 className="mt-2",
             ),
             label="May {}".format(dt.datetime.fromisoformat(d).day)
