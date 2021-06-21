@@ -75,6 +75,58 @@ def create_binned_lists(info: dict, no_bins=6.0):
     return bins
 
 
+def create_similarity_dict(xs, ys) -> Dict[str, float]:
+    sim = {}
+    for x, fx in xs:
+        for y, fy in ys:
+            if x == y:
+                sim[x] = np.abs(fx - fy)
+    if len(sim) == 0:
+        return sim
+    a = min(sim.values())
+    b = max(sim.values())
+    for x, y in sim.items():
+        sim[x] = ((y - a) / (b - a)) * 100
+    return dict(sorted(sim.items(), key=lambda i: i[1], reverse=True))
+
+
+def create_similarity_graph(twitter_info: dict, media_info: dict):
+    similarity_info = {
+        'key_phrases': [],
+        'emotional_traits': [],
+        'behavioral_traits': []
+    }
+    for key in similarity_info.keys():
+        for d in twitter_info.keys():
+            sims = np.nanmean(list(create_similarity_dict(twitter_info[d][key].items(), media_info[d][key].items()).values()))
+            similarity_info[key].append(np.nan_to_num(sims))
+    return dcc.Graph(
+        id='sim-graph',
+        figure=go.Figure(
+            layout={
+                'title': 'Key Phrases and Trait Similarity'
+            },
+            data=[
+                go.Scatter(
+                    name='Key Phrases',
+                    x=list(twitter_info.keys()),
+                    y=similarity_info['key_phrases']
+                ),
+                go.Scatter(
+                    name='Emotional Traits',
+                    x=list(twitter_info.keys()),
+                    y=similarity_info['emotional_traits']
+                ),
+                go.Scatter(
+                    name='Behavioral Traits',
+                    x=list(twitter_info.keys()),
+                    y=similarity_info['behavioral_traits']
+                )
+            ]
+        )
+    )
+
+
 def create_word_lists(twitter_info: dict, media_info: dict, key: str):
     iter_obj = []
     for d in twitter_info.keys():
@@ -92,20 +144,6 @@ def create_word_lists(twitter_info: dict, media_info: dict, key: str):
         else:
             col = "secondary"
         return dbc.ListGroupItem(text, color=col)
-
-    def create_similarity_dict(xs, ys) -> Dict[str, float]:
-        sim = {}
-        for x, fx in xs:
-            for y, fy in ys:
-                if x == y:
-                    sim[x] = np.abs(fx - fy)
-        if len(sim) == 0:
-            return sim
-        a = min(sim.values())
-        b = max(sim.values())
-        for x, y in sim.items():
-            sim[x] = ((y - a) / (b - a)) * 100
-        return dict(sorted(sim.items(), key=lambda i: i[1], reverse=True))
 
     return [
         dbc.Tab(

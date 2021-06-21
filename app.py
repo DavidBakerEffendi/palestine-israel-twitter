@@ -84,9 +84,9 @@ def df_by_date(df_to_sort) -> Dict[str, Dict[str, any]]:
         for k, v in b_traits.items():
             b_traits[k] = np.mean(v)
 
-        kp_entry = dict(sorted(all_kps.items(), key=lambda item: item[1], reverse=True)[:50])
-        e_entry = dict(sorted(e_traits.items(), key=lambda item: item[1], reverse=True)[:50])
-        b_entry = dict(sorted(b_traits.items(), key=lambda item: item[1], reverse=True)[:50])
+        kp_entry = dict(sorted(all_kps.items(), key=lambda item: item[1], reverse=True))
+        e_entry = dict(sorted(e_traits.items(), key=lambda item: item[1], reverse=True))
+        b_entry = dict(sorted(b_traits.items(), key=lambda item: item[1], reverse=True))
 
         dict_by_date[d] = {
             "sentiment": g['sentiment'],
@@ -137,16 +137,7 @@ navbar = dbc.NavbarSimple(
     dark=True,
 )
 
-all_bins = {}
-
-for d in twitter_info.keys():
-    all_bins[d] = {}
-    keys = ["key_phrases", "emotional_traits", "behavioral_traits"]
-    for k in keys:
-        all_bins[d][k] = {
-                "Twitter": components.create_binned_lists(twitter_info[d][k]),
-                "Media": components.create_binned_lists(media_info[d][k])
-            }
+sim_graph = components.create_similarity_graph(twitter_info, media_info)
 
 app.layout = html.Div(children=[
     navbar,
@@ -190,6 +181,7 @@ app.layout = html.Div(children=[
         dbc.Tabs(components.create_word_lists(twitter_info, media_info, 'key_phrases')),
         dbc.Tabs(components.create_word_lists(twitter_info, media_info, 'emotional_traits')),
         dbc.Tabs(components.create_word_lists(twitter_info, media_info, 'behavioral_traits')),
+        sim_graph
     ])
 ])
 

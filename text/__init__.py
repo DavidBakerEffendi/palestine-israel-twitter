@@ -40,9 +40,9 @@ introduction_conflict_2 = [
     """
     The period between 10 May and the initial cease-fire on 21 May left 256 Palestinians including 66 children dead, 
     whereas Israel was left with at least 13 deaths, two of which were children. Casualties and displaced civilians were
-    majority Palestinian. By 21 May a ceasefire came into effect, but this was ultimately broken on 16 June when Hamas
-    launched incendiary balloons into Israel. The Israeli Air Force responded by carrying out multiple airstrikes in the 
-    Gaza strip.
+    majority Palestinian and in the thousands. By 21 May a ceasefire came into effect, but this was ultimately broken on
+    16 June when Hamas launched incendiary balloons into Israel. The Israeli Air Force responded by carrying out 
+    multiple airstrikes in the Gaza strip.
     """
 ]
 
