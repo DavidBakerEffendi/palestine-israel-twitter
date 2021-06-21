@@ -1,7 +1,7 @@
 # Palestine Israel Twitter and Media Analysis
 
-Expert.ai hackathon submission which uses Twitter data to interpret Palestine-Israel sentiment. At the time of 
-submission this site can be found deployed on [AWS](http://35.177.12.96).
+Expert.ai hackathon submission which uses Twitter data to interpret Palestine-Israel sentiment and opinion. At the time 
+of submission this site can be found deployed on [AWS](http://18.169.146.101).
 
 This website relies on data being mined and processed, but I have purposefully excluded this data from 
 the repository to keep it small and comply with the terms and conditions of my Twitter API application.
