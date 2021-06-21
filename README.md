@@ -11,8 +11,8 @@ the repository to keep it small and comply with the terms and conditions of my T
 All `pip` requirements are found in `requirements.txt`. GeckoDriver needs to be installed for web scraping websites that
 use JavaScript. 
 
-To run the Dash application, one can simply run `python3 app.py` although this may not work for you unless you have
-mined and analyzed the data.
+To run the Dash in development mode, one can simply run `python3 app.py` although this may not work for you unless you 
+have mined and analyzed the data. Production mode can be run using `gunicorn` and by running the `DEPLOY` script.
 
 ## Structure
 
