@@ -12,6 +12,7 @@ from nltk.corpus import stopwords
 import plotly.graph_objects as go
 
 import components
+import config
 import text
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.UNITED])
@@ -100,53 +101,28 @@ def df_by_date(df_to_sort) -> Dict[str, Dict[str, any]]:
 twitter_info = df_by_date(twitter_df)
 media_info = df_by_date(media_df)
 
-sentiment_graph = dcc.Graph(
-    id='sentiment-graph',
-    figure=go.Figure(
-        layout={
-            'title': 'Twitter vs Media Sentiment'
-        },
-        data=[
-            go.Scatter(
-                name='Twitter Sentiment',
-                x=list(twitter_info.keys()),
-                y=[x['sentiment'].mean() for x in twitter_info.values()],
-                error_y=dict(
-                    array=[x['sentiment'].std() for x in twitter_info.values()],
-                    visible=True)
-            ),
-            go.Scatter(
-                name='Media Sentiment',
-                x=list(media_info.keys()),
-                y=[x['sentiment'].mean() for x in media_info.values()],
-                error_y=dict(
-                    array=[x['sentiment'].std() for x in media_info.values()],
-                    visible=True)
-            )
-        ]
-    )
-)
-
-navbar = dbc.NavbarSimple(
-    children=[
-        dbc.NavItem(dbc.NavLink("About", href="#")),
-    ],
-    brand="Sentiment & Opinion Mining: 2021 Israel–Palestine Crisis",
-    brand_href="#",
-    color="primary",
-    dark=True,
-)
-
-sim_graph = components.create_similarity_graph(twitter_info, media_info)
-
 app.layout = html.Div(children=[
-    navbar,
+    dbc.NavbarSimple(
+        children=[
+            dbc.NavItem(dbc.NavLink("David Baker Effendi", href="https://davidbakereffendi.github.io")),
+        ],
+        brand="Sentiment & Opinion Mining: 2021 Israel–Palestine Crisis",
+        brand_href="#",
+        color="primary",
+        dark=True,
+    ),
     dbc.Container(children=[
-        dbc.Alert(
-            "This project is written to be as unbiased as possible and to simply present the facts. The events in this "
-            "piece are recent and the pain may still be raw for some. This is both educational and should provide "
-            "some interesting insights to how mainstream media and Twitter users react to the events of the 2021 "
-            "Israel–Palestine crisis.",
+        dbc.Alert(children=[
+                "This project is an entry to the expert.ai 2021",
+                html.A("Sentiment & Opinion Mining Natural Language API Hackathon",
+                       href="https://expertai-nlapi-042021.devpost.com"),
+                """
+                . The goal is to better understand the relationship between the public reaction and media portrayal of 
+                the 2021 Israel-Palestine Crisis. The project code is open-source and can be found on
+                """,
+                html.A("GitHub", href="https://github.com/DavidBakerEffendi/palestine-israel-twitter"),
+                "."
+            ],
             color="info",
             style={'margin': '2em 0em 1em 0em'}
         ),
@@ -174,16 +150,32 @@ app.layout = html.Div(children=[
         html.H3("Problem Statement"),
         *[html.P(children=x) for x in text.introduction_problem],
         html.H2(children='Method'),
+        *[html.P(children=x) for x in text.method_summary],
+        html.H3(children="Data Mining"),
+        *[html.P(children=x) for x in text.data_mining],
+        html.H4(children="Twitter Data"),
+        *[html.P(children=x) for x in text.twitter_mining],
+        html.H4(children="Media Articles"),
+        *[html.P(children=x) for x in text.media_mining],
+        html.H3(children="Data Pre-Processing"),
+        *[html.P(children=x) for x in text.data_preprocessing],
+        html.H3(children="Language Processing"),
+        *[html.P(children=x) for x in text.language_processing],
         html.H2(children='Results'),
+        *[html.P(children=x) for x in text.results_summary],
         html.H3(children='Sentiment Analysis'),
-        sentiment_graph,
+        components.create_sentiment_graph(twitter_info, media_info),
         html.H3(children='Key Phrases and Traits'),
         dbc.Tabs(components.create_word_lists(twitter_info, media_info, 'key_phrases')),
         dbc.Tabs(components.create_word_lists(twitter_info, media_info, 'emotional_traits')),
         dbc.Tabs(components.create_word_lists(twitter_info, media_info, 'behavioral_traits')),
-        sim_graph
+        components.create_similarity_graph(twitter_info, media_info),
+        html.H2(children='Conclusion'),
+        *[html.P(children=x) for x in text.conclusion],
+        html.H2(children='Future Work'),
+        *[html.P(children=x) for x in text.future_work],
     ])
 ])
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=config.DEBUG, host=config.HOST, port=config.PORT)

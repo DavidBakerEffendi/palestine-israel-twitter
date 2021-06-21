@@ -10,3 +10,7 @@ MEDIA_URLS_PATH = "./resources/media_articles.txt"
 PRO_ISRAEL_HASHTAGS = "./resources/pro_israel.txt"
 PRO_PALESTINE_HASHTAGS = "./resources/pro_palestine.txt"
 NEUTRAL_HASHTAGS = "./resources/neutral.txt"
+
+DEBUG = True
+HOST = "127.0.0.1"
+PORT = "8050"

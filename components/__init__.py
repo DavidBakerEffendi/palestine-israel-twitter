@@ -90,6 +90,35 @@ def create_similarity_dict(xs, ys) -> Dict[str, float]:
     return dict(sorted(sim.items(), key=lambda i: i[1], reverse=True))
 
 
+def create_sentiment_graph(twitter_info: dict, media_info: dict):
+    return dcc.Graph(
+        id='sentiment-graph',
+        figure=go.Figure(
+            layout={
+                'title': 'Twitter vs Media Sentiment'
+            },
+            data=[
+                go.Scatter(
+                    name='Twitter Sentiment',
+                    x=list(twitter_info.keys()),
+                    y=[x['sentiment'].mean() for x in twitter_info.values()],
+                    error_y=dict(
+                        array=[x['sentiment'].std() for x in twitter_info.values()],
+                        visible=True)
+                ),
+                go.Scatter(
+                    name='Media Sentiment',
+                    x=list(media_info.keys()),
+                    y=[x['sentiment'].mean() for x in media_info.values()],
+                    error_y=dict(
+                        array=[x['sentiment'].std() for x in media_info.values()],
+                        visible=True)
+                )
+            ]
+        )
+    )
+
+
 def create_similarity_graph(twitter_info: dict, media_info: dict):
     similarity_info = {
         'key_phrases': [],

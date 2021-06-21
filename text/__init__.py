@@ -63,3 +63,47 @@ introduction_problem = [
     if pushed by mounting public pressure.
     """
 ]
+
+method_summary = [
+    """
+    In this section we describe how we mine our data and the proceeding analysis. Our Twitter dataset is mined via the
+    Twitter API 2.0 using the academic research product track, data cleaned using NLTK, and then further processed by 
+    expert.ai's classification and sentiment analysis endpoints.
+    """
+]
+
+data_mining = [
+    """
+    To obtain a large enough amount of data to analyze, Twitter and a set of mainstream media article URLs were mined 
+    for natural language covering the event. In total, 130 267 Tweets and 165 media articles were mined to create our 
+    dataset.
+    """
+]
+
+twitter_mining = [
+
+]
+
+media_mining = [
+
+]
+
+data_preprocessing = [
+
+]
+
+language_processing = [
+
+]
+
+results_summary = [
+
+]
+
+conclusion = [
+
+]
+
+future_work = [
+
+]
