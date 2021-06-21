@@ -55,7 +55,102 @@ def plotly_wordcloud(words: Dict[str, int]):
     return fig
 
 
-def create_wordcloud_tabs(twitter_info: dict, key: str):
+def bin_by_date(twitter_info: dict, key: str):
+    bins = {}
+    for d, x in twitter_info.items():
+        bins[d] = create_binned_lists(x[key])
+    return bins
+
+
+def create_binned_lists(info: dict, no_bins=6.0):
+    interval = 100.0 / float(no_bins)
+    bins = {}
+    i = 0
+    while i < 100:
+        bins[i] = []
+        for x, y in info.items():
+            if i + interval >= y > i:
+                bins[i].append(x)
+        i += interval
+    return bins
+
+
+def create_word_lists(twitter_info: dict, media_info: dict, key: str):
+    iter_obj = []
+    for d in twitter_info.keys():
+        iter_obj.append((d, twitter_info[d][key].items(), media_info[d][key].items()))
+
+    def make_list_item(text: str, freq: float):
+        if freq > 80:
+            col = "danger"
+        elif 80 >= freq > 60:
+            col = "warning"
+        elif 60 >= freq > 40:
+            col = "success"
+        elif 40 >= freq > 20:
+            col = "info"
+        else:
+            col = "secondary"
+        return dbc.ListGroupItem(text, color=col)
+
+    def create_similarity_dict(xs, ys) -> Dict[str, float]:
+        sim = {}
+        for x, fx in xs:
+            for y, fy in ys:
+                if x == y:
+                    sim[x] = np.abs(fx - fy)
+        if len(sim) == 0:
+            return sim
+        a = min(sim.values())
+        b = max(sim.values())
+        for x, y in sim.items():
+            sim[x] = ((y - a) / (b - a)) * 100
+        return dict(sorted(sim.items(), key=lambda i: i[1], reverse=True))
+
+    return [
+        dbc.Tab(
+            label="{}-05".format(dt.datetime.fromisoformat(d).day),
+            children=[
+                dbc.Card([
+                    dbc.CardBody([
+                        html.H3("Legend"),
+                        html.P(
+                            """Each list is ordered and colored by the impact of the item on a scale of 0-100. The 
+                            center list is scored by how similarly impactful the item was between both datasets.
+                            """),
+                        dbc.ListGroup([
+                            dbc.ListGroupItem(">= 100", color="danger"),
+                            dbc.ListGroupItem("60-80", color="warning"),
+                            dbc.ListGroupItem("40-60", color="success"),
+                            dbc.ListGroupItem("20-40", color="info"),
+                            dbc.ListGroupItem("< 20", color="secondary"),
+                        ], horizontal=True, className="mb-2"),
+                        dbc.Row([
+                            dbc.Col(width="4",
+                                    children=[html.H5("Twitter", className="text-center"),
+                                              dbc.ListGroup([make_list_item(x, f) for x, f in xs], flush=True)]
+                                    ),
+                            dbc.Col(width="4",
+                                    children=[html.H5("Matches", className="text-center"),
+                                              dbc.ListGroup([make_list_item(z, f)
+                                                             for z, f in create_similarity_dict(xs, ys).items()],
+                                                            flush=True)]
+                                    ),
+                            dbc.Col(width="4",
+                                    children=[html.H5("Media", className="text-center"),
+                                              dbc.ListGroup([make_list_item(y, f) for y, f in ys], flush=True)]
+                                    ),
+                        ], justify="center", )
+                    ], style={"maxHeight": "400px", "overflow": "scroll"}
+                    ),
+                ]),
+            ]
+        )
+        for d, xs, ys in iter_obj
+    ]
+
+
+def create_wordcloud_tabs(twitter_info: dict, media_info: dict, key: str):
     return [
         dbc.Tab(
             dbc.Card([
@@ -72,10 +167,25 @@ def create_wordcloud_tabs(twitter_info: dict, key: str):
                             )]
                             , width="4")
                     ]),
-                )],
+                ),
+                dbc.CardHeader("Media"),
+                dbc.CardBody(
+                    dbc.Row([
+                        dbc.Col(dcc.Graph(id='media-{}-{}-wordcloud'.format(key, d),
+                                          figure=plotly_wordcloud(y[key])), width="12", lg="auto"),
+                        dbc.Col([
+                            html.H5("Top Results"),
+                            html.Ul(
+                                [html.Li("{}".format(phrase, p)) for phrase, p in
+                                 list(sorted(y[key].items(), key=lambda item: item[1], reverse=True))[:15]]
+                            )]
+                            , width="4")
+                    ]),
+                ),
+            ],
                 className="mt-2",
             ),
             label="{}-05".format(dt.datetime.fromisoformat(d).day)
         )
-        for d, x in twitter_info.items()
+        for (d, x), y in zip(twitter_info.items(), media_info.values())
     ]
