@@ -81,12 +81,14 @@ def create_similarity_dict(xs, ys) -> Dict[str, float]:
         for y, fy in ys:
             if x == y:
                 sim[x] = np.abs(fx - fy)
+    # At this point, the lower the score the higher the match
     if len(sim) == 0:
         return sim
     a = min(sim.values())
     b = max(sim.values())
     for x, y in sim.items():
-        sim[x] = ((y - a) / (b - a)) * 100
+        # Flip the match and make it from 0-100
+        sim[x] = (1.0 - ((y - a) / (b - a))) * 100
     return dict(sorted(sim.items(), key=lambda i: i[1], reverse=True))
 
 
@@ -95,7 +97,9 @@ def create_sentiment_graph(twitter_info: dict, media_info: dict):
         id='sentiment-graph',
         figure=go.Figure(
             layout={
-                'title': 'Twitter vs Media Sentiment'
+                'title': 'Twitter vs Media Sentiment',
+                'xaxis_title': "Date",
+                'yaxis_title': "Sentiment",
             },
             data=[
                 go.Scatter(
@@ -127,13 +131,16 @@ def create_similarity_graph(twitter_info: dict, media_info: dict):
     }
     for key in similarity_info.keys():
         for d in twitter_info.keys():
-            sims = np.nanmean(list(create_similarity_dict(twitter_info[d][key].items(), media_info[d][key].items()).values()))
+            sims = np.nanmean(
+                list(create_similarity_dict(twitter_info[d][key].items(), media_info[d][key].items()).values()))
             similarity_info[key].append(np.nan_to_num(sims))
     return dcc.Graph(
         id='sim-graph',
         figure=go.Figure(
             layout={
-                'title': 'Key Phrases and Trait Similarity'
+                'title': 'Key Phrases and Trait Similarity',
+                'xaxis_title': "Date",
+                'yaxis_title': "Similarity",
             },
             data=[
                 go.Scatter(
@@ -174,24 +181,20 @@ def create_word_lists(twitter_info: dict, media_info: dict, key: str):
             col = "secondary"
         return dbc.ListGroupItem(text, color=col)
 
+    if key == "key_phrases":
+        title = "Key Phrases"
+    elif key == "emotional_traits":
+        title = "Emotional Traits"
+    else:
+        title = "Behavioral Traits"
+
     return [
         dbc.Tab(
             label="{}-05".format(dt.datetime.fromisoformat(d).day),
             children=[
                 dbc.Card([
                     dbc.CardBody([
-                        html.H3("Legend"),
-                        html.P(
-                            """Each list is ordered and colored by the impact of the item on a scale of 0-100. The 
-                            center list is scored by how similarly impactful the item was between both datasets.
-                            """),
-                        dbc.ListGroup([
-                            dbc.ListGroupItem(">= 100", color="danger"),
-                            dbc.ListGroupItem("60-80", color="warning"),
-                            dbc.ListGroupItem("40-60", color="success"),
-                            dbc.ListGroupItem("20-40", color="info"),
-                            dbc.ListGroupItem("< 20", color="secondary"),
-                        ], horizontal=True, className="mb-2"),
+                        html.H4(title, className="card-title text-center"),
                         dbc.Row([
                             dbc.Col(width="4",
                                     children=[html.H5("Twitter", className="text-center"),

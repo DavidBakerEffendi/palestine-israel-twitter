@@ -1,7 +1,7 @@
+import random
 from typing import Dict
 
 import dash
-import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 import numpy as np
@@ -9,10 +9,11 @@ import pandas as pd
 import json
 import nltk
 from nltk.corpus import stopwords
-import plotly.graph_objects as go
+import config as conf
 
 import components
 import config
+from scraping import import_tweets
 import text
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.UNITED])
@@ -41,6 +42,12 @@ def remove_outlier(df_in, col_name):
 
 media_df = import_data("analyzed_media.json")
 twitter_df = remove_outlier(import_data("analyzed_tweets.json"), 'sentiment')
+
+tags = []
+tags.extend([("n", x) for x in import_tweets.get_hashtags(conf.NEUTRAL_HASHTAGS)])
+tags.extend([("i", x) for x in import_tweets.get_hashtags(conf.PRO_ISRAEL_HASHTAGS)])
+tags.extend([("p", x) for x in import_tweets.get_hashtags(conf.PRO_PALESTINE_HASHTAGS)])
+random.shuffle(tags)
 
 try:
     nltk.data.find('corpora/stopwords')
@@ -98,6 +105,16 @@ def df_by_date(df_to_sort) -> Dict[str, Dict[str, any]]:
     return dict_by_date
 
 
+def make_tag_item(af, tag):
+    body = dbc.CardBody(html.P(tag, className="card-text"))
+    if af == "n":
+        return dbc.Card(body, color="secondary", className="mb-2", inverse=True)
+    elif af == "p":
+        return dbc.Card(body, color="primary", className="mb-2", inverse=True)
+    else:
+        return dbc.Card(body, color="info", className="mb-2", inverse=True)
+
+
 twitter_info = df_by_date(twitter_df)
 media_info = df_by_date(media_df)
 
@@ -113,16 +130,17 @@ app.layout = html.Div(children=[
     ),
     dbc.Container(children=[
         dbc.Alert(children=[
-                "This project is an entry to the expert.ai 2021",
-                html.A("Sentiment & Opinion Mining Natural Language API Hackathon",
-                       href="https://expertai-nlapi-042021.devpost.com"),
-                """
-                . The goal is to better understand the relationship between the public reaction and media portrayal of 
-                the 2021 Israel-Palestine Crisis. The project code is open-source and can be found on
-                """,
-                html.A("GitHub", href="https://github.com/DavidBakerEffendi/palestine-israel-twitter"),
-                "."
-            ],
+            "This project is an entry to the expert.ai 2021 ",
+            html.A("Sentiment & Opinion Mining Natural Language API Hackathon",
+                   href="https://expertai-nlapi-042021.devpost.com"),
+            """
+            . The goal is to better understand the relationship between the public reaction and media portrayal of 
+            the 2021 Israel-Palestine Crisis. The project code is open-source and can be found on
+            """,
+            html.A("GitHub", href="https://github.com/DavidBakerEffendi/palestine-israel-twitter"),
+            ". The GitHub also contains the URLs used to scrape media article data from and be seen as the references"
+            "used for the information stated in the introduction paragraph."
+        ],
             color="info",
             style={'margin': '2em 0em 1em 0em'}
         ),
@@ -151,29 +169,69 @@ app.layout = html.Div(children=[
         *[html.P(children=x) for x in text.introduction_problem],
         html.H2(children='Method'),
         *[html.P(children=x) for x in text.method_summary],
-        html.H3(children="Data Mining"),
+        html.H3(children="Data Mining and Pre-Processing"),
         *[html.P(children=x) for x in text.data_mining],
         html.H4(children="Twitter Data"),
-        *[html.P(children=x) for x in text.twitter_mining],
+        *[html.P(children=x) for x in text.twitter_mining_1],
+        dbc.Container(
+            dbc.Row([
+                dbc.Col(make_tag_item(af, x), width="3")
+                for af, x in tags
+            ]),
+            style={"maxHeight": "400px", "overflow": "scroll"},
+            className="mb-4 p-0"
+        ),
+        *[html.P(children=x) for x in text.twitter_mining_2],
         html.H4(children="Media Articles"),
-        *[html.P(children=x) for x in text.media_mining],
-        html.H3(children="Data Pre-Processing"),
-        *[html.P(children=x) for x in text.data_preprocessing],
+        *text.media_mining,
         html.H3(children="Language Processing"),
         *[html.P(children=x) for x in text.language_processing],
         html.H2(children='Results'),
         *[html.P(children=x) for x in text.results_summary],
         html.H3(children='Sentiment Analysis'),
+        *[html.P(children=x) for x in text.sentiment_paragraph],
         components.create_sentiment_graph(twitter_info, media_info),
         html.H3(children='Key Phrases and Traits'),
+        *[html.P(children=x) for x in text.phrases_trait_summary],
+        html.Span("Legend", className="h5"),
+        html.P(
+            """Each list is ordered and colored by the impact of the item on a scale of 0-100. The 
+            center list is scored by how similarly impactful the item was between both datasets.
+            """),
+        dbc.ListGroup([
+            dbc.ListGroupItem(">= 100", color="danger"),
+            dbc.ListGroupItem("60-80", color="warning"),
+            dbc.ListGroupItem("40-60", color="success"),
+            dbc.ListGroupItem("20-40", color="info"),
+            dbc.ListGroupItem("< 20", color="secondary"),
+        ], horizontal=True, className="mb-2"),
+        *[html.P(children=x) for x in text.key_phrases_paragraph],
         dbc.Tabs(components.create_word_lists(twitter_info, media_info, 'key_phrases')),
+        *[html.P(children=x) for x in text.e_traits_paragraph],
         dbc.Tabs(components.create_word_lists(twitter_info, media_info, 'emotional_traits')),
+        *[html.P(children=x) for x in text.b_traits_paragraph],
         dbc.Tabs(components.create_word_lists(twitter_info, media_info, 'behavioral_traits')),
+        *[html.P(children=x) for x in text.sim_paragraph],
         components.create_similarity_graph(twitter_info, media_info),
         html.H2(children='Conclusion'),
         *[html.P(children=x) for x in text.conclusion],
         html.H2(children='Future Work'),
         *[html.P(children=x) for x in text.future_work],
+        dbc.Alert(children=[
+            html.P("I would like to give a special thanks to those who made this project possible:"),
+            html.Ul([
+                html.Li("Expert.ai for hosting the hackathon and raising the free-tier limit to allow me to be able to "
+                        "process the large quantities of data mined."),
+                html.Li("To Twitter for providing me with access to the academic research product track so that I "
+                        "was able to mine tweets from this time period."),
+                html.Li(["My partner, ", html.A("Lauren Hayward",
+                                                href="https://www.linkedin.com/in/lauren-hayward-8ba853199/"),
+                        ", for the idea for this project and the time spent proof-reading my work."])
+            ])
+        ],
+            color="info",
+            style={'margin': '2em 0em 1em 0em'}
+        ),
     ])
 ])
 
