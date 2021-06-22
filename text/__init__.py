@@ -265,5 +265,10 @@ future_work = [
     These trends may suggest applications in using neural networks, perhaps graph neural networks, to predict the level
     of impact these kinds of events generate over time given the live input and reaction we can mine key phrases and 
     traits from. 
+    """,
+    """
+    An option to generalize the functionality of this application exists in the way one could automate the scraping and
+    mining of Twitter data and media data by providing key words and headline examples. One could then use this to get a
+    better perception of the public's opinion over any widely covered event.
     """
 ]
