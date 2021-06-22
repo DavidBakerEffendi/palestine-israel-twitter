@@ -161,7 +161,7 @@ sentiment_paragraph = [
     a score of 0 is true neutral whereas above 0 is positive sentiment and a score below 0 is negative sentiment.
     """,
     """
-    The Twitter data has a large variance in the sentiment and so outliers were removed using the z-score but this
+    The Twitter data has a large variance in the sentiment and so outliers were removed using the z-score but
     considerable noise remains. This may indicate a lot of noise in the Twitter data for unrelated Tweets or
     that Tweets are not very well-suited to sentiment analysis. The quality of the sentiment for media articles showed 
     much more consistency with sentiment gradually rising towards the beginning of the ceasefire but still remaining 
