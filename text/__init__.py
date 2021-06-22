@@ -7,8 +7,7 @@ introduction_summary = [
     the method and results of processing the data using 
     """,
     html.A("expert.ai", href="https://www.expert.ai"),
-    """
-    's natural language processing API. At the end we conclude our findings and explain potential future work on this 
+    """'s natural language processing API. At the end we conclude our findings and explain potential future work on this 
     kind of data.
     """]
 
@@ -240,33 +239,54 @@ sim_paragraph = [
     """
     The graph below shows the mean similarity score based on the matches for the key phrases and traits. Spikes in these
     appear to happen around significant events whereas key phrases hit local maxes around big events such as the start
-    of Israel's airstrike campaign on 11 May.
+    of Israel's airstrike campaign on 11 May. Similarly, local minimums are seen clearly on 10 May and 12 May which
+    line up with two days Hamas launched missiles towards Israel - this may suggest that the public and media do not
+    share the same sentiments the events of these days.
     """,
     """
-    The behavioral traits began to peak around the time Israel rejected Hamas' initial ceasefire proposal. These 
-    remained at a high and consistent similarity until the end of the interval. The largest spike in emotional traits
-    was when Israel targeted and destroyed a building which housed Associated Press journalists on 15 May and then 
-    peaked once more at the beginning of the ceasefire.
+    All three similarity begin to increase between May 12-14 which is during the main arc of the Israeli airstrike 
+    campaign and the proposal and rejection of Hamas' initial ceasefire proposal. These remained at a high and 
+    consistent similarity until the end of the interval. This suggests a union between the sentiments of the public
+    and media which appears to condemn the violence brought from the addition frequency of airstrikes. 
+    """,
+    """
+    The largest spike in emotional traits was when Israel targeted and destroyed a building which housed Associated 
+    Press journalists on 15 May and then peaked once more at the beginning of the ceasefire. The following day, 16 May,
+    the Israeli Defense Force (IDF) reported 40 rockets fired from Gaza and responded by dropping 100 bombs with the
+    intent of destroying underground tunnels used by Hamas. This marks the final local minimum in the similarity graph
+    and suggests that the reported actions from Hamas provide the largest disconnects in sentiment between the public 
+    and the media.
     """,
     """
     This graph shows that there is a much higher similarity in emotional and behavioral traits between tweet and media
-    articles which suggests that analyzing the sub-text of the two datasets are more useful in determining the impact
-    of events and correlation between the public and the media.
+    articles when compared to looking at sentiment or key phrases which suggests that analyzing the sub-text of the two
+    datasets are more useful in determining the impact of events and correlation between the public and the media.
     """
 ]
 
 conclusion = [
     """
     The sentiment over the events of the 2021 Israel-Palestine crisis was unsurprising low due to the international
-    condemnation of the violence and human rights violations that occurred. In our results the key phrases
-    show us which events made the largest impact on the public and the media during the crisis.
+    condemnation of the violence and human rights violations that occurred. This alone does not provide much useful
+    information but our results prove that analyzing the sub-text of the way language in the data shows us the affect
+    divisive issues have on the public and the media.
     """,
     """
-    We show, from the similarity in the emotional and behavioral traits of our data, that patterns do in fact emerge
-    in the wake of events that bring out passionate emotions and international attention. Over the course of the crisis
-    the public was vocal from the beginning and showed strong emotions which were eventually followed by in media
-    coverage. These two datasets show us that the media will step outside the bounds of objectivity in extreme
-    humanitarian crisis and that despite any bias or misinformation that the feelings of condemnation are consistent.
+    In our results the key phrases show us which events made the largest impact on the public and the media during the 
+    crisis. We have seen that there are fewer strong phrases used by media articles when compared to tweets but that 
+    this does not discredit the usefulness of the results when looking at what phrases and traits are shared by the text
+    generated media and public.
+    """,
+    """
+    We show, from the similarity in the emotional and behavioral traits of our data, that patterns between the sentiment
+    and the public do in fact emerge with predictable outcomes. When Hamas, who are seen as the underdog and/or 
+    terrorists, made an attack against Israel there was clear low scores in similarity across the board. Conversely,
+    when Israel retaliated with more effective force, the public and media shared sentiments. Sentiments from both sides
+    remained consistently low but there seemed to be more universally agreed condemnation for Israel's response.
+    """,
+    """
+    These two datasets show us that the media will step outside the bounds of objectivity in extreme humanitarian crisis
+    and that despite any bias or misinformation that the feelings of condemnation are consistent towards similar events.
     """
 ]
 
