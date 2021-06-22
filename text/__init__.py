@@ -1,26 +1,30 @@
 import dash_html_components as html
 
-introduction_summary = ["""
-        The following introduction will cover both the socio-political scenario that is the 2021 Israel-Palestine crisis
-        and the structure of how the resulting data from the public is processed. The introduction is then followed by
-        the method and results of the processing the data using""", html.I("expert.ai"), """'s natural language 
-        processing API. At the end we conclude our findings and explain potential future work on this kind of data.
-        """]
+introduction_summary = [
+    """
+    The following introduction will cover both the socio-political scenario that is the 2021 Israel-Palestine crisis
+    and the structure of how the resulting data from the public is processed. The introduction is then followed by
+    the method and results of processing the data using 
+    """,
+    html.A("expert.ai", href="https://www.expert.ai"),
+    """
+    's natural language processing API. At the end we conclude our findings and explain potential future work on this 
+    kind of data.
+    """]
 
 introduction_conflict_1 = [
     """
-    On May 10 2021 an outbreak of violence, looting, rocket attacks and protests commenced in 
+    On May 10 2021 an outbreak of violence commenced in 
     the ongoing Israeli-Palestinian conflict over the Gaza strip. The vector that began the main events of 
     May\'s crisis was on May 6 when a group of Palestinians began to protest in East Jerusalem. This was in 
     response to the trial happening in the Supreme Court of Israel on the eviction of six Palestinian families in 
-    Sheikh Jarrah. This eviction is long legal battle against right-wing Jewish Israelis trying to acquire property in 
-    the neighbourhood. Sheikh Jarrah is a primarily Palestinian neighbourhood but it is effectively annexed by Israel 
+    Sheikh Jarrah. Sheikh Jarrah is a primarily Palestinian neighbourhood but it is effectively annexed by Israel 
     and under military control. 
     """,
     """
     As anger grew around the potential eviction, Palestinian youth began throwing rocks at Israeli police force from
     Jerusalem’s Al-Aqsa Mosque. Al-Aqsa Mosque is considered Islam's third holiest site and is also known as Temple 
-    Mount. Hundreds of police responded with firing rubber bullets and stun grenades at thousands of Palestinians which 
+    Mount. Police responded with firing rubber bullets and stun grenades at the protesting Palestinians which 
     resulted in 205 Palestinians and 17 officers being injured. Already at this point had the violence drawn 
     international protests and calls for peace from world leaders.
     """,
@@ -31,7 +35,7 @@ introduction_conflict_2 = [
     The clashes coincided with Qadr Night (8 May) and Jerusalem Day (9-10 May) observed by Muslims and Jews 
     respectively. At this point more than 700 Palestinians were injured. By 10 May Hamas, a Palestinian Sunni-Islamic 
     fundamentalist, militant, and nationalist organization, gave Israel an ultimatum to withdraw security forces from 
-    Temple Mount and Sheikh Jarrah by 6PM otherwise consequences will follow. The ultimatum was not met with a response 
+    Temple Mount and Sheikh Jarrah by 6PM. The ultimatum was not met with a response 
     and Hamas proceeded to launch rockets at Israel of which most were intercepted by Israel's Iron Dome defense system.
     Those of which managed to pass through hit residences and a school. Israel responded with multiple airstrikes 
     against Gaza demolishing buildings including schools, hospitals, and refugee camps. On 13 May Hamas first proposed a 
@@ -39,8 +43,8 @@ introduction_conflict_2 = [
     """,
     """
     The period between 10 May and the initial cease-fire on 21 May left 256 Palestinians including 66 children dead, 
-    whereas Israel was left with at least 13 deaths, two of which were children. Casualties and displaced civilians were
-    majority Palestinian and in the thousands. By 21 May a ceasefire came into effect, but this was ultimately broken on
+    whereas Israel was left with at least 13 deaths, two of which were children. Displaced civilians were
+    majority Palestinian and in the thousands. On 21 May a ceasefire came into effect, but this was ultimately broken on
     16 June when Hamas launched incendiary balloons into Israel. The Israeli Air Force responded by carrying out 
     multiple airstrikes in the Gaza strip.
     """
@@ -48,17 +52,17 @@ introduction_conflict_2 = [
 
 introduction_problem = [
     """
-    The crisis is one deeply rooted in political and religious debate in the ongoing Israeli-Palestinian conflict,
-    marked as taking place since the mid-20th century. Opinions of the crisis from both sides are vocal on social media 
-    followed with day-to-day mainstream media coverage. Both the mainstream media and public opinion are vulnerable to
-    bias and misinformation. While bias requires more advanced context-specific techniques to analyze, we can already 
-    mine sentiment and opinion.
+    The ongoing Israeli-Palestinian conflict is one deeply rooted in political and religious debate,
+    marked as taking place since the mid-20th century. Opinions both sides of the crisis are expressed on social media, 
+    alongside day-to-day mainstream media coverage. Both the mainstream media and public opinion are vulnerable to
+    bias and misinformation. While bias requires more advanced context-specific techniques to analyze, with expert.ai 
+    we can already mine sentiment and opinion.
     """,
     """
     In this project we would like to mine the sentiment, behavioural, and emotional traits from Tweets
     and articles by various media outlets. Both Twitter and media outlets produce masses of data that require 
     sophisticated processing techniques. We hope to identify: (i) Patterns which may or may not exist between the public
-    and the media i.e. whether the media influences the masses or whether the media misrepresents public opinion on 
+    and the media i.e. whether the media influences the masses or whether the media departs from public opinion on 
     divisive matters. (ii) Whether the media would step outside the bounds of objectivity towards an emotional response
     if pushed by mounting public pressure.
     """
@@ -153,11 +157,13 @@ results_summary = [
 sentiment_paragraph = [
     """
     Below we show a graph of the sentiment extracted from both datasets aggregated per day. This includes error bars
-    that show the standard deviation in sentiment per plot point.
+    that show the standard deviation in sentiment per plot point. The sentiment analysis extracts the subjective
+    information from our data and scores it across an interval of negative, positive, or neutral sentiment. For example,
+    a score of 0 is true neutral whereas above 0 is positive sentiment and a score below 0 is negative sentiment.
     """,
     """
     The Twitter data has a large variance in the sentiment and so outliers were removed using the z-score but this
-    unfortunately did not help too much. This may indicate a lot of noise in the Twitter data for unrelated Tweets or
+    considerable noise remains. This may indicate a lot of noise in the Twitter data for unrelated Tweets or
     that Tweets are not very well-suited to sentiment analysis. The quality of the sentiment for media articles showed 
     much more consistency with sentiment gradually rising towards the beginning of the ceasefire but still remaining 
     much lower than the average sentiment over the Twitter data.
@@ -182,28 +188,39 @@ key_phrases_paragraph = [
     """
     When looking at the key phrases used between the two datasets, it is clear that the public and media are fairly
     different. When looking at the Twitter data there are clearly repeated phrases that score higher and make a larger 
-    impact but in the media most phrases are scored consistently and there is less repetition. When looking at each
-    dataset's list in isolation the results are not very interesting. This changes when we look at the matches and we
-    can see a correlation in the important facts that we being carried across both platforms.
+    impact but in the media most phrases are scored consistently and there is less repetition in the first half of the 
+    timeline. When looking at each dataset's list in isolation the results are not very interesting. This changes when 
+    we look at the matches and we can see a correlation in the important facts that we being carried across both 
+    platforms.
+    """,
+    """
+    A notable pattern begins in the middle of the timeline where higher scoring key phrases emerge from the media. This
+    may be an indication of the public reaction pushing the media to be more subjective.
     """,
     """
     Certain phrases such as "compound", "police", or "rocket" only matching at a high rate days after an event 
     illustrate the delay in which news of an event impacts the public and the media at the same time. The matches also
     appear to show what are the most impactful events.
-    """
+    """,
 ]
 
 e_traits_paragraph = [
     """
-    Looking towards the emotional traits extracted from the text we immediately see the expected result of most 
+    Looking towards the emotional traits extracted from the text we gradually see the expected result of most 
     emotional traits scoring fairly mildly in the media articles as the media are meant to present stories factually and
     without bias. Twitter is often a place for the public to rant and debate so it is not a surprise to see high scores
     for key emotions.
     """,
     """
-    Many of the matches here are on how low-scoring emotions matched strongly on either side but we do see shared
+    Many of the matches here are on low-scoring emotions matched strongly on either side but we do see shared
     opinions between the two datasets. Many of the strong matches occur a day or two after highly violent events and 
-    only growing throughout the interval.
+    growing throughout the interval.
+    """,
+    """
+    We see a larger emotional reaction from the media around 15 May which is also the day the building housing The 
+    Associated Press was demolished by an Israeli airstrike. This emotive response from the media is almost certainly
+    from describing the direct affect of these events on the media themselves. The media grows much more emotive 
+    throughout the timeline from this point onwards.
     """
 ]
 
@@ -241,9 +258,8 @@ sim_paragraph = [
 conclusion = [
     """
     The sentiment over the events of the 2021 Israel-Palestine crisis was unsurprising low due to the international
-    condemnation of the violence and human rights violations that occurred. In our results we show that key phrases
-    may show us what about each event made the largest impact internationally but not necessarily where the media
-    and public share a strong link.
+    condemnation of the violence and human rights violations that occurred. In our results the key phrases
+    show us which events made the largest impact on the public and the media during the crisis.
     """,
     """
     We show, from the similarity in the emotional and behavioral traits of our data, that patterns do in fact emerge
@@ -258,7 +274,7 @@ future_work = [
     """
     The bias in opinion in this event was clear, mostly from the public, and would certainly be a valuable 
     study to see if this is present in the media and/or when this changes. Using knowledge graphs one could perhaps 
-    gather the kinds of facts the media will decide to communicate and which are withheld but seeing what is being
+    gather the kinds of facts the media will decide to communicate and which are withheld by seeing what is being
     covered by the public.
     """,
     """

@@ -138,7 +138,7 @@ app.layout = html.Div(children=[
             the 2021 Israel-Palestine Crisis. The project code is open-source and can be found on
             """,
             html.A("GitHub", href="https://github.com/DavidBakerEffendi/palestine-israel-twitter"),
-            ". The GitHub also contains the URLs used to scrape media article data from and be seen as the references"
+            ". The GitHub also contains the URLs used to scrape media article data from and be seen as the references "
             "used for the information stated in the introduction paragraph."
         ],
             color="info",
