@@ -1,15 +1,15 @@
 import datetime as dt
 
-TWITTER_BEARER_TOKEN =
-EXPERT_AI_USER =
-EXPERT_AI_PASS =
+TWITTER_BEARER_TOKEN = ""
+EXPERT_AI_USER = ""
+EXPERT_AI_PASS = ""
 
 TWEETS_FROM = (dt.datetime.now() - dt.timedelta(days=6.99)).astimezone().isoformat()
 TWEETS_TO = None
-MEDIA_URLS_PATH = "./resources/media_articles.txt"
-PRO_ISRAEL_HASHTAGS = "./resources/pro_israel.txt"
-PRO_PALESTINE_HASHTAGS = "./resources/pro_palestine.txt"
-NEUTRAL_HASHTAGS = "./resources/neutral.txt"
+MEDIA_URLS_PATH = "assets/media_articles.txt"
+PRO_ISRAEL_HASHTAGS = "pro_israel.txt"
+PRO_PALESTINE_HASHTAGS = "pro_palestine.txt"
+NEUTRAL_HASHTAGS = "neutral.txt"
 
 DEBUG = True
 HOST = "127.0.0.1"
